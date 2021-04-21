@@ -1,7 +1,7 @@
 class Block{
 	private String currentHash;
 	private String prevHash;
-	private int noice;
+	private int nonce;
 	
 	private Vector<Transcation> transactionList;
 	
