@@ -4,7 +4,7 @@ class Block{
 	private int nonce;
 	
 	private Vector<Transcation> transactionList;
-	//Merkel tree how?
+	private Merkel merkelTree; //Merkel tree how?
 	
 	public Block(String prevHash){
 		this.prevHash = prevHash;
