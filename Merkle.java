@@ -3,7 +3,7 @@ class Merkle{
   private Vector<Transaction> transactionList;
   
   public Merkle(){
-    
+      transcationList = new Vector<Transaction>();
   }
   
   
