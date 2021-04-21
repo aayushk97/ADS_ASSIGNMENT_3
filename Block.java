@@ -5,9 +5,12 @@ class Block{
 	
 	private Vector<Transcation> transactionList;
 	
-	public Block(){
+	public Block(String prevHash){
+		this.prevHash = prevHash;
 		this.transactionList = new Vector<Transaction>();
 	
 	}
+	
+	//a function to add the transactions in the vector: tommorow
 	
 }
