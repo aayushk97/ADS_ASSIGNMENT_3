@@ -3,7 +3,6 @@ class Block{
 	private String prevHash;
 	private int nonce;
 	
-	private Vector<Transcation> transactionList;
 	private Merkle merkleTree; //Merkel tree how?
 	
 	public Block(String prevHash){
