@@ -7,7 +7,7 @@ class Block{
 	
 	public Block(String prevHash){
 		this.prevHash = prevHash;
-		this.transactionList = new Vector<Transaction>();
+		this.merkleTree = new Merkle();
 		
 		//calculate hash of this block using prevHash + nonce + Txns
 	}
