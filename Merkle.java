@@ -10,5 +10,9 @@ class Merkle{
   public String getMerkleRootHash(){
     return rootHash;
   }
+  
+  public bool addTransactionToMerkle(Transaction txn){
+    
+  }
 
 }
