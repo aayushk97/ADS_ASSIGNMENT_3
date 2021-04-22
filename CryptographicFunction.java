@@ -22,7 +22,7 @@ public class CryptographicFunction{
 		
 	}
 	
-	public static generateKeyPair(int keySize, PrivateKey privateKey, PublicKey publicKey){
+	public static void generateKeyPair(int keySize, PrivateKey privateKey, PublicKey publicKey){
 		//create a key pair generator object
 		KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("DSA");
 		
