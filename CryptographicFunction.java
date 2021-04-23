@@ -1,11 +1,12 @@
 
 import java.security.*;
 import java.math.BigInteger;
+//Have test this class by signing any string??
 
 public class CryptographicFunction{
 	
 	
-	public static String encryptUsingSHA256(String input){
+	public static String SHA256(String input){  //SHA is not encryption algorithm
 		
 		byte[] hashInBytes = new byte[32];
 		
