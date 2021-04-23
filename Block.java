@@ -5,6 +5,8 @@ class Block{
 	
 	private Merkle merkleTree; //Merkel tree how?
 	
+	private HashMap<Integer, Account> accountOfAll;  //As all nodes keep track of everyOne's account by annonimity
+
 	public Block(String prevHash){
 		this.prevHash = prevHash;
 		this.merkleTree = new Merkle();
