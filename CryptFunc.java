@@ -37,5 +37,31 @@ public class CryptographicFunction{
 		publicKey = pair.getPublic();
 	
 	}
+	
+	public static byte[] applyDSASign(PrivateKey privateKey, String input){
+		Signature signature = Signature.getInstance("SHA256withDSA");
+		signature.initSign(privateKey);
+		
+		byte[] bytes = input.getBytes();
+		
+		//Add data to the signature
+		signature.update(bytes);
+		
+		//calculate the signature
+		byte[] signatureResult = signature.sign();
+		
+		return signatureResult;
+	
+	}
+	
+	public static boolean verifyDSASign(PublicKey publicKey, String message, byte[] messageSignature){
+		Signature signature = Signature.getInstance("SHA256withDSA");
+		//initialize the signature
+		signature.initVerify(publicKey);
+		signature.update(message.getBytes());
+		
+		//verify the signature
+		return signature.verify(messageSignature);
+	}
 
 }
