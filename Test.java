@@ -11,13 +11,13 @@ public class Test {
   
     // Creating a random salt value to prevent
     // attacks from the Rainbow table.
-    public static byte[] Creating_Random_Salt()
-    {
-        byte[] salt = new byte[16];
-        SecureRandom secure_random = new SecureRandom();
-        secure_random.engineNextBytes(salt);
-        return salt;
-    }
+    // public static byte[] Creating_Random_Salt()
+    // {
+    //     byte[] salt = new byte[16];
+    //     SecureRandom secure_random = new SecureRandom();
+    //     secure_random.engineNextBytes(salt);
+    //     return salt;
+    // }
   
     // Creating hash value using input value
     // and salt using the SHA2 Algorithm.
@@ -38,20 +38,20 @@ public class Test {
   
         // Calling the function Creating_Random_Salt()
         // to generate a random salt value
-        byte[] salt = Creating_Random_Salt();
-        System.out.println("SALT_VALUE: " + DatatypeConverter.printHexBinary(salt));
-        String valueToHash = UUID.randomUUID().toString();
+        // byte[] salt = Creating_Random_Salt();
+        // System.out.println("SALT_VALUE: " + DatatypeConverter.printHexBinary(salt));
+        // String valueToHash = UUID.randomUUID().toString();
   
-        // Generating first hash with the salt
-        byte[] hash1 = Creating_SHA2_Hash(valueToHash, salt);
+        // // Generating first hash with the salt
+        // byte[] hash1 = Creating_SHA2_Hash(valueToHash, salt);
   
-        // Generating second hash with exact salt
-        // to check if we get the same hash.
-        byte[] hash2 = Creating_SHA2_Hash(valueToHash, salt);
+        // // Generating second hash with exact salt
+        // // to check if we get the same hash.
+        // byte[] hash2 = Creating_SHA2_Hash(valueToHash, salt);
   
-        // Print first and the second hash value
-        System.out.println("HASH1_VALUE: " + DatatypeConverter.printHexBinary(hash1));
-        System.out.println("HASH2_VALUE: "+ DatatypeConverter.printHexBinary(hash2));
+        // // Print first and the second hash value
+        // System.out.println("HASH1_VALUE: " + DatatypeConverter.printHexBinary(hash1));
+        // System.out.println("HASH2_VALUE: "+ DatatypeConverter.printHexBinary(hash2));
 
 
         byte[] data1 = "0123456789".getBytes("UTF-8");

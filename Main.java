@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
 public class main{
-	public static final COINBASE = 50;  //Reward amount
+	public static final MINING_REWARD = 50;  //Reward amount
 	public static int numNodes;
 	public static Vector<Node> nodes;
 

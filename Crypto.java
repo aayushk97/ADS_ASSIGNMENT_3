@@ -1,7 +1,7 @@
-
-import java.security.*;
-import java.math.BigInteger;
+import java.math.BigInteger; 
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest; 
+import java.security.NoSuchAlgorithmException;
 
 //Have test this class by signing any string??
 
