@@ -1,6 +1,9 @@
 public class main{
-  public static void main(String[] args){
-    
-  }
+	
+	static Vector<Node> allNodes;
+
+	public static void main(String[] args){
+    	
+  	}
 
 }

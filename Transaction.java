@@ -1,11 +1,12 @@
 class Transaction{
 	private int transactionID;
-	private PublicKey sender;
+	public PublicKey sender;
+	public PublicKey receiver;
 	private float amount;
 
 	public byte[] prevHash;
 	public byte[] txHash;
-	
+
 
 	public Transaction(float amt, ){
 	

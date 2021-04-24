@@ -1,11 +1,16 @@
 class Block{
-	private String currentHash;
-	private String prevHash;
+	private String blockHash;
+	private String prevBlockHash;
+
 	private int nonce;
-	
-	private Merkle merkleTree; //Merkel tree how?
+	private long timeStamp;
+
+	private Merkle merkleTreeRoot; //Merkel tree how?
 	
 	private HashMap<Integer, Account> accountOfAll;  //As all nodes keep track of everyOne's account by annonimity
+
+	public Block prev  // reference of previous block to form a linked list.
+	public Block next // reference of next block?? is it possible?
 
 	public Block(String prevHash){
 		this.prevHash = prevHash;
