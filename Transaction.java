@@ -15,4 +15,6 @@ class Transaction{
 	public int getTransactionID(){
 		return transactionID;
 	}
+	
+	//transaction hash will be the hash of senderKey + receiverKey + amount
 }
