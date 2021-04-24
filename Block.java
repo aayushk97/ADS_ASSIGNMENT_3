@@ -7,7 +7,7 @@ class Block{
 
 	private Merkle merkleTreeRoot; //Merkel tree how?
 	
-	private HashMap<Integer, Account> accountOfAll;  //As all nodes keep track of everyOne's account by annonimity
+	private HashMap<PublicKey, Account> accountOfAll;  //As all nodes keep track of everyOne's account by annonimity
 
 	public Block prev  // reference of previous block to form a linked list.
 	public Block next // reference of next block?? is it possible?

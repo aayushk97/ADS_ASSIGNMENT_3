@@ -2,8 +2,9 @@ class Merkle{
   private String rootHash;
   private Vector<Transaction> transactionList;
   
-  public Merkle(){
-      transcationList = new Vector<Transaction>();
+  public Merkle(Vector<Transaction> vec){
+      transcationList = vec;
+      buidMerkelTree();
   }
   
   
