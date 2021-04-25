@@ -1,8 +1,7 @@
 import java.math.BigInteger; 
-import java.nio.charset.StandardCharsets;
 import java.security.*;
 
-//Have test this class by signing any string?? EDIT: TESTED. Can be tested using Test4.java class
+//Have test this class by signing any string?? EDIT: TESTED. Can be tested using Test4.java class: Ok
 
 public class Crypto{
 	
@@ -13,7 +12,7 @@ public class Crypto{
 			byte[] hashInBytes = new byte[32];
 		
 			MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-			hashInBytes = messageDigest.digest(input.getBytes(StandardCharsets.UTF_8));
+			hashInBytes = messageDigest.digest(input.getBytes("UTF-8"));
 		
 			BigInteger number = new BigInteger(1, hashInBytes);
 		

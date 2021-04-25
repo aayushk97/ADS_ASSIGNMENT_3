@@ -1,9 +1,16 @@
 public class Node implements Runnable{
 	static final BigInteger ONE = new BigInteger("1");
 
+	public PublicKey publicKey;
+	private PrivateKey privateKey;
+
 	HashMap<byte[], Block> bitcoinChain;
 
 	public Node(Vector<Block> bitcoinChain){
+		KeyPair keypair = generateKeyPair(128);
+		publicKey = keypair.getPublic();
+		privateKey = keypair.getPrivate();
+
 		this.bitcoinChain = bitcoinChain;  //ideally it should probe all other nodes to get longest chain.
 	}
 
