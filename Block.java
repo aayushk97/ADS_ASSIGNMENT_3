@@ -1,3 +1,7 @@
+import java.math.BigInteger; 
+import java.util.*;
+import java.security.*;
+
 class Block{
 
 	//Block header
@@ -11,8 +15,8 @@ class Block{
 	public Block(){
 		//for genesis block
 	}
+	
 	public Block(byte[] prevHash, Vector<Transaction> vec){
-		generateKeyPair(128);
 		this.prevHash = prevHash;
 		this.merkleTree = new Merkle(vec);  //vec is the list of all transaction related to this block		
 		//calculate hash of this block using prevHash + nonce + Txns + timeStamp

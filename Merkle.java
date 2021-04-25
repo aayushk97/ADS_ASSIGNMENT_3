@@ -1,3 +1,5 @@
+import java.util.*;
+
 class Merkle{
     //private String rootHash;
     public byte[] rootHash;

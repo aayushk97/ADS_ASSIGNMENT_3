@@ -1,3 +1,6 @@
+import java.security.*;
+import java.util.*;
+
 class Transaction{
 	private int transactionID;
 	public PublicKey sender;
@@ -39,9 +42,10 @@ class Transaction{
 		inputTxns.add(inp);
 	}
 
-	public signTransaction(private){
+	public void signTransaction(PublicKey publicKey){
 
 	}
-	public byte[] getHash(){ return txtHash}
+	
+	public byte[] getHash(){ return txHash;}
 	//transaction hash will be the hash of senderKey + receiverKey + amount
 }
