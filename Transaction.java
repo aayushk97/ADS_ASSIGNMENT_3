@@ -15,7 +15,6 @@ class Transaction{
 		this.coinbase = false;
 		inputTxns = new Vector<>();
 		outputTxns = new Vector<>();
-
 	}
 	public Transaction(boolean coinbase, PublicKey minorsPublickey){
 		this.coinbase = true;

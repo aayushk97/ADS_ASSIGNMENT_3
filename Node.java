@@ -19,6 +19,7 @@ public class Node implements Runnable{
 	}
 	public Vector<Transaction> collectValidTransactions(){
 		//Verify the available transaction and add them in block
+		
 	}
 
 	public Block prepareBlock(){
