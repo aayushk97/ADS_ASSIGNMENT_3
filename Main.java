@@ -6,14 +6,31 @@ public class Main{
 	public static int w = 4;  //first w bits to be zero
 	public static int numNodes;
 	public static Vector<Node> nodes;
+
     public static int arity = 2; //default
+	
+	static Vector<Queue<Block>> blockReceivingQueues;
+	static Vector<Queue<Transaction>> txnReceivingQueues;
+	
 	public static void main(String[] args){
+	
+	
 	Scanner in = new Scanner(System.in);
 	//create a new block chain class
 	//create new nodes
 	System.out.println("Enter the number of nodes in network");
 	numNodes = in.nextInt();
 
+	//initialize the queues of each node 
+	blockReceivingQueues = new Vector<>();
+	txnReceivingQueues = new Vector<>();
+	
+	for(int i = 0; i < numNodes; i++){
+		blockReceivingQueues.add(new LinkedList<>());
+		txnReceivingQueues.add(new LinkedList<>());
+	
+	}
+	
 	//create a node
 	//create genesis block using node and add it to blockchain
 
