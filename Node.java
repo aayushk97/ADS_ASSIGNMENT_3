@@ -1,17 +1,30 @@
+import java.math.BigInteger;
+import java.util.*;
+import java.security.*;
+
 public class Node implements Runnable{
+	
 	static final BigInteger ONE = new BigInteger("1");
-
-	public PublicKey publicKey;
-	private PrivateKey privateKey;
-
+	
 	HashMap<byte[], Block> bitcoinChain;
 
+	private PrivateKey privateKey;
+	private PublicKey publicKey;
+	
 	public Node(Vector<Block> bitcoinChain){
-		KeyPair keypair = generateKeyPair(128);
-		publicKey = keypair.getPublic();
-		privateKey = keypair.getPrivate();
-
 		this.bitcoinChain = bitcoinChain;  //ideally it should probe all other nodes to get longest chain.
+		
+		//Generate keys for this node
+		int size = 256; 
+		KeyPair pair = Crypto.generateKeyPair(size);
+		privateKey = pair.getPrivate();
+		publicKey = pair.getPublic();
+		
+		
+	}
+	
+	public void run(){
+	
 	}
 
 	public boolean makeTransaction(double amount){
@@ -24,7 +37,7 @@ public class Node implements Runnable{
 	public Block prepareBlock(){
 		//To create a block wtih available new transactions
 		Vector<Transaction> vec = collectValidTransactions();
-		Block newBlock = new Block(bitcoinChain.lastElement().blockHash, vec )
+		Block newBlock = new Block(bitcoinChain.lastElement().blockHash, vec );
 	}
 
   	public Block mineBlock(){ 
@@ -51,6 +64,17 @@ public class Node implements Runnable{
 	   
   		}
   		return blk;
+  	}
+  	
+  	public boolean verifyBlock(Block blockToVerify){
+  		
+  		byte[] blockHash = blockToVerify.blockHash;
+  		
+  		byte[] prevBlockHash = blockToVerify.prevBlockHash;
+  		BigInteger nonce = blockToverify.nonce;
+  		
+  		
+  	
   	}
 
   	public byte[] concatTwoByteArray(byte[] one, byte[] two){
