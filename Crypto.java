@@ -1,69 +1,90 @@
 import java.math.BigInteger; 
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest; 
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
 
-//Have test this class by signing any string??
+//Have test this class by signing any string?? EDIT: TESTED. Can be tested using Test4.java class
 
 public class Crypto{
 	
 	
 	public static String sha256(String input){  //SHA is not encryption algorithm
 		
-		byte[] hashInBytes = new byte[32];
+		try{
+			byte[] hashInBytes = new byte[32];
 		
-		MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-		hashInBytes = messageDigest.digest(input.getBytes(StandardCharsets.UTF_8));
+			MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+			hashInBytes = messageDigest.digest(input.getBytes(StandardCharsets.UTF_8));
 		
-		BigInteger number = new BigInteger(1, hashInBytes);
+			BigInteger number = new BigInteger(1, hashInBytes);
 		
-		StringBuilder hashInHex = new StringBuilder(number.toString(16));
+			StringBuilder hashInHex = new StringBuilder(number.toString(16));
 		
-		while(hashInHex.length() < 32) hashInHex.insert(0, '0');
+			while(hashInHex.length() < 32) hashInHex.insert(0, '0');
 		
-		return hashInHex.toString();
+			return hashInHex.toString();
+		}catch(Exception e){
+			throw new RuntimeException(e);
+		}
 		
 	}
 	
-	public static void generateKeyPair(int keySize, PrivateKey privateKey, PublicKey publicKey){
-		//create a key pair generator object
-		KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("DSA");
+	public static KeyPair generateKeyPair(int keySize){
+		try{
+			//create a key pair generator object
+			KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("EC");
+			SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
 		
-		//initialize the key pair generator object
-		keyPairGen.initialize(keySize);
+			//initialize the key pair generator object
+			keyPairGen.initialize(keySize, random);
 		
-		//generate the key pair
-		KeyPair pair = keyPairGen.generateKeyPair();
+			//generate the key pair
+			KeyPair pair = keyPairGen.generateKeyPair();
 		
-		privateKey = pair.getPrivate();
-		publicKey = pair.getPublic();
+			return pair;
+			//privateKey = pair.getPrivate();
+			//publicKey = pair.getPublic();
+		}catch(Exception e){
+			throw new RuntimeException(e);
+		}
 	
 	}
 	
-	public static byte[] applyDSASign(PrivateKey privateKey, String input){
-		Signature signature = Signature.getInstance("SHA256withDSA");
-		signature.initSign(privateKey);
+	public static byte[] applyECDSASign(PrivateKey privateKey, String input){
+		try{
+			
+			Signature signature = Signature.getInstance("SHA256withECDSA");
+			signature.initSign(privateKey);
 		
-		byte[] bytes = input.getBytes();
+			byte[] bytes = input.getBytes("UTF-8");
 		
-		//Add data to the signature
-		signature.update(bytes);
+			//Add data to the signature
+			signature.update(bytes);
 		
-		//calculate the signature
-		byte[] signatureResult = signature.sign();
+			//calculate the signature
+			byte[] signatureResult = signature.sign();
 		
-		return signatureResult;
+			return signatureResult;
+		}catch(Exception e){
+			throw new RuntimeException(e);
+		}
 	
 	}
 	
-	public static boolean verifyDSASign(PublicKey publicKey, String message, byte[] messageSignature){
-		Signature signature = Signature.getInstance("SHA256withDSA");
-		//initialize the signature
-		signature.initVerify(publicKey);
-		signature.update(message.getBytes());
+	public static boolean verifyECDSASign(PublicKey publicKey, String message, byte[] messageSignature){
+		try{
+			Signature signature = Signature.getInstance("SHA256withECDSA");
 		
-		//verify the signature
-		return signature.verify(messageSignature);
+			//initialize the signature
+			signature.initVerify(publicKey);
+			signature.update(message.getBytes());
+		
+			//verify the signature
+			return signature.verify(messageSignature);
+		}catch(Exception e){
+			throw new RuntimeException(e);
+		}
 	}
 
 }
+
+//Try catch block was added to prevent NoSuchAlgorithmException
