@@ -1,7 +1,25 @@
+import java.security.*;
+
 class Test4{
 	public static void main(String[] args){
 		String msg = "This is me";
 		System.out.println("Print: " + Crypto.sha256(msg));
+		
+		
+		
+		int size = 256;
+		
+		KeyPair pair = Crypto.generateKeyPair(size);
+		PrivateKey sk = pair.getPrivate();
+		PublicKey pk = pair.getPublic();
+		String afterSign;
+		
+		byte[] bytesMsg = Crypto.applyECDSASign(sk, Crypto.sha256(msg));
+		
+		boolean verified = Crypto.verifyECDSASign(pk, Crypto.sha256(msg), bytesMsg);
+		
+		System.out.println("The message after signing was: "+bytesMsg.toString()+" and was it verified? "+verified);
+		
 	}
 
 	public static String toBitString(byte[] b)
