@@ -1,6 +1,8 @@
 import java.math.BigInteger; 
 import java.util.*;
 import java.security.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 
 class Block{
 
@@ -17,7 +19,7 @@ class Block{
 	}
 	
 	public Block(byte[] prevHash, Vector<Transaction> vec){
-		this.prevHash = prevHash;
+		this.prevBlockHash = prevHash;
 		this.merkleTree = new Merkle(vec);  //vec is the list of all transaction related to this block		
 		//calculate hash of this block using prevHash + nonce + Txns + timeStamp
 	}
@@ -34,9 +36,9 @@ class Block{
 	//Not needed for now. keep it by end we can remove this
 	public byte[] longToByte(long inp){
 		//try{
-			ByteArrayOutputStream outS = new ByteArrayOutputStream();
-			DataOutputStream dataOS = new DataoutputStream(outOS);
-			dataOS.wirteLong(inp);
+			ByteArrayOutputStream outOS = new ByteArrayOutputStream();
+			DataOutputStream dataOS = new DataOutputStream(outOS);
+			dataOS.writeLong(inp);
 			byte[] bytes = outOS.toByteArray();
 			dataOS.close();
 			return bytes;

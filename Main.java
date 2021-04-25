@@ -1,11 +1,12 @@
 import java.util.Scanner;
+import java.util.*;
 
-public class main{
+public class Main{
 	public static final double MINING_REWARD = 50;  //Reward amount
-	public static w = 4;  //first w bits to be zero
+	public static int w = 4;  //first w bits to be zero
 	public static int numNodes;
 	public static Vector<Node> nodes;
-
+    public static int arity = 2; //default
 	public static void main(String[] args){
 	Scanner in = new Scanner(System.in);
 	//create a new block chain class
@@ -29,15 +30,15 @@ public class main{
         }
         return sb.toString();
     }
-    public static String toBitString(byte[] b)
-    {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < b.length; i++)
-        {
-            sb.append(String.format("%02X", b[i] & 0xFF));
-        }
-        return sb.toString();
-    }
+    // public static String toBitString(byte[] b)
+    // {
+    //     StringBuilder sb = new StringBuilder();
+    //     for (int i = 0; i < b.length; i++)
+    //     {
+    //         sb.append(String.format("%02X", b[i] & 0xFF));
+    //     }
+    //     return sb.toString();
+    // }
 
     public static boolean isFirstwbitsZero(byte[] hash){
     	for(int i =0; i < w && i < hash.length*4; i++){

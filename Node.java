@@ -1,6 +1,10 @@
 import java.math.BigInteger;
 import java.util.*;
 import java.security.*;
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest; 
+
 
 public class Node implements Runnable{
 	
@@ -12,7 +16,7 @@ public class Node implements Runnable{
 	private PublicKey publicKey;
 	
 	public Node(Vector<Block> bitcoinChain){
-		this.bitcoinChain = bitcoinChain;  //ideally it should probe all other nodes to get longest chain.
+		//this.bitcoinChain = bitcoinChain;  //ideally it should probe all other nodes to get longest chain.
 		
 		//Generate keys for this node
 		int size = 256; 

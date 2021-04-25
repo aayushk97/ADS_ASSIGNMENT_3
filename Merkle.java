@@ -1,4 +1,6 @@
 import java.util.*;
+import java.io.ByteArrayOutputStream;
+
 
 class Merkle{
     //private String rootHash;
@@ -10,14 +12,14 @@ class Merkle{
 
 
     public Merkle(Vector<Transaction> vec){
-        transcationList = vec;
+        this.transactionList = vec;
         this.arity = Main.arity;
         this.tree = new Vector<>();
         buidMerkelTree();
     }
 
 
-    public String getMerkleRootHash(){
+    public byte[] getMerkleRootHash(){
       return rootHash;
     }
 
@@ -33,9 +35,9 @@ class Merkle{
     public Vector<byte[]> getHashedParent(Vector<byte[]> vec){
 
       Vector<byte[]> nextlevel = new Vector<>();
-      noOfparents = vec.size()/this.arity;
-
-      for( int i = 0; i < noOfparents; i = i++){
+      int noOfparents = vec.size()/this.arity;
+      int i = 0;
+      for( i = 0; i < noOfparents; i = i++){
         ByteArrayOutputStream combinedBytes = new ByteArrayOutputStream();
         for(int j = i*this.arity ; j < i + this.arity; j++){
             combinedBytes.write(vec.get(j));

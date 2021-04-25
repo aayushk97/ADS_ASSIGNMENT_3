@@ -1,3 +1,5 @@
+import java.security.PublicKey;
+
 class Output{
 	public PublicKey receiver;
 	public double amount;
