@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
 public class main{
-	public static final MINING_REWARD = 50;  //Reward amount
+	public static final double MINING_REWARD = 50;  //Reward amount
 	public static w = 4;  //first w bits to be zero
 	public static int numNodes;
 	public static Vector<Node> nodes;
