@@ -26,6 +26,8 @@ public class Node implements Runnable{
 	public void run(){
 	
 		Transaction receivedTransaction;
+		//First we need to validate the transaction?
+		//Then we verify it
 		boolean verified = verifyTransaction(receivedTransaction);
 		
 		//if verified the go forward else reject it
