@@ -1,14 +1,11 @@
 import java.security.*;
 import java.util.*;
+import java.io.ByteArrayOutputStream;
 
 class Transaction{
-	private int transactionID;
 	public PublicKey sender;
-	public PublicKey receiver;
-	private float amount;
-
-	public byte[] prevHash;
 	public byte[] txHash;
+	public byte[] signature;
 
 	public Vector<Input> inputTxns;
 	public Vector<Output> outputTxns;
@@ -42,10 +39,6 @@ class Transaction{
 		inputTxns.add(inp);
 	}
 
-	public void signTransaction(PublicKey publicKey){
-
-	}
-	
 	public byte[] getHash(){ return txHash;}
 	//transaction hash will be the hash of senderKey + receiverKey + amount
 }

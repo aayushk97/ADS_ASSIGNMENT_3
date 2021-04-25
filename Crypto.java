@@ -26,6 +26,16 @@ public class Crypto{
 		}
 		
 	}
+
+	public static byte[] sha256(byte[] input){  //SHA is not encryption algorithm
+		try{
+			MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+			return messageDigest.digest(input);
+		}catch(Exception e){
+			throw new RuntimeException(e);
+		}
+		
+	}
 	
 	public static KeyPair generateKeyPair(int keySize){
 		try{
@@ -48,23 +58,23 @@ public class Crypto{
 	
 	}
 	
-	public static byte[] applyECDSASign(PrivateKey privateKey, String input){
+	public static byte[] applyECDSASign(PrivateKey privateKey, byte[] input){
 		try{
 			
 			Signature signature = Signature.getInstance("SHA256withECDSA");
 			signature.initSign(privateKey);
 		
-			byte[] bytes = input.getBytes("UTF-8");
+			//byte[] bytes = input.getBytes("UTF-8");
 		
 			//Add data to the signature
-			signature.update(bytes);
+			signature.update(input);
 		
 			//calculate the signature
 			byte[] signatureResult = signature.sign();
 		
 			return signatureResult;
 		}catch(Exception e){
-			throw new RuntimeException(e);
+			System.out.println("Exception: Signature");
 		}
 	
 	}
@@ -81,6 +91,21 @@ public class Crypto{
 			return signature.verify(messageSignature);
 		}catch(Exception e){
 			throw new RuntimeException(e);
+		}
+	}
+
+	public static boolean verifyECDSASign(PublicKey publicKey, byte[] message, byte[] messageSignature){
+		try{
+			Signature signature = Signature.getInstance("SHA256withECDSA");
+		
+			//initialize the signature
+			signature.initVerify(publicKey);
+			signature.update(message);
+		
+			//verify the signature
+			return signature.verify(messageSignature);
+		}catch(Exception e){
+			System.out.println("Exception: Problem in verifying signature.");
 		}
 	}
 

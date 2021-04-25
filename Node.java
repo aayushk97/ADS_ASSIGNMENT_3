@@ -37,6 +37,7 @@ public class Node implements Runnable{
 		//if verified the go forward else reject it
 	}
 	
+
 	
 	public boolean verifyTransaction(Transaction receivedTransaction){
 		
@@ -52,8 +53,11 @@ public class Node implements Runnable{
 	
 	}
 	
-	
-	public boolean makeTransaction(double amount){
+	public Transaction createCoinbaseTxn(){
+		Transaction coinbaseTxn = new Transaction(true, this.publicKey);
+		return coinbaseTxn;
+	}
+	public Transaction makeTransaction(double amount){
 
 	}
 	public Vector<Transaction> collectValidTransactions(){
@@ -112,7 +116,37 @@ public class Node implements Runnable{
 
   	}
 
+  	public boolean verifyTxnSignature(Transaction txn){
+  		byte[] rawData = getTxnBytes(Transaction txn);
+  		return Crypto.verifyECDSASign(txn.sender, rawData, txn.signature);
+  	}
+  	public void signTransaction(Transaction txn){
+
+        byte[] rawData = getTxnBytes(Transaction txn);
+        byte[] signature = Crypto.applyECDSASign(this.privateKey, rawData);
+        txn.txHash = Crypto.sha256(rawData);
+        txn.signature = signature;
+
+    }
+  	public byte[] getTxnBytes(Transaction txn){
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+
+		int inpSize = txn.inputTxns.size();
+		for(int i = 0; i < inpSize; i++){
+			bytes.write(txn.inputTxns.get(i).refTxn);
+		}
+
+		int outSize = txn.outputTxns.size();
+		for (int i = 0; i < outSize; i++ ){
+			bytes.write(txn.outputTxns.get(i).getBytes())
+		}
+
+		return bytes.toByteArray();
+	}
+
   	public boolean isitRequiredhash(byte[] hash){
   		return Main.isFirstwbitsZero(hash);
   	}
+
+
 }

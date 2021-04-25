@@ -56,4 +56,13 @@ public class Main{
 
         return (arr[index] >> bitPosition & 1) != 1;
     }
+    
+    public static byte[] getBytesFromDouble(Double value) {
+        byte[] bytes = new byte[Double.BYTES];
+        Long x = Double.doubleToLongBits(value);
+        for (int i = 0; i < 8; i++) {
+            bytes[i] = (byte)((x >> ((7 - i) * 8)) & 0xff);
+        }
+        return bytes;
+    }
 }
