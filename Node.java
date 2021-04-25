@@ -41,6 +41,7 @@ public class Node implements Runnable{
 	public boolean verifyTransaction(Transaction receivedTransaction){
 		
 		//find the hash of this transaction
+		//Edit: Add time too?
 		String data = receivedTransaction.prevHash + Crypto.getKeyInString(receivedTransaction.receiver) + Float.toString(receivedTransaction.amount);
 	
 		String hash = Crypto.sha256(data);
