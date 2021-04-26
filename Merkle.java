@@ -33,7 +33,7 @@ class Merkle{
     }
 
     public Vector<byte[]> getHashedParent(Vector<byte[]> vec){
-
+	try{
       Vector<byte[]> nextlevel = new Vector<>();
       int noOfparents = vec.size()/this.arity;
       int i = 0;
@@ -55,6 +55,9 @@ class Merkle{
       nextlevel.add(res);
 
       return nextlevel;
+      }catch(Exception e){
+			throw new RuntimeException (e);
+	}
 
     }
     private void buidMerkelTree(){
