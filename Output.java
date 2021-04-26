@@ -1,5 +1,5 @@
 import java.security.PublicKey;
-import java.io.ByteArrayOutputStream
+import java.io.ByteArrayOutputStream;
 class Output{
 	public PublicKey receiver;
 	public double amount;
@@ -10,9 +10,13 @@ class Output{
 	}
 
 	public byte[] getBytes(){
+		try{
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		bytes.write(receiver.getEncoded());
 		bytes.write(Main.getBytesFromDouble(amount));
 		return bytes.toByteArray();
+		}catch(Exception e){
+			throw new RuntimeException (e);
+		}
 	}
 }
