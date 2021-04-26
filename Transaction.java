@@ -25,9 +25,9 @@ class Transaction{
 		outputTxns.add(out);
 	}
 	
-	public int getTransactionID(){
-		return transactionID;
-	}
+	// public int getTransactionID(){
+	// 	return transactionID;
+	// }
 	
 	public void addOutputToTxn(PublicKey receiver, double amt){
 		Output out = new Output(receiver, amt);

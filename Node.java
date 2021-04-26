@@ -3,8 +3,6 @@ import java.util.*;
 import java.security.*;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest; 
-
 
 public class Node implements Runnable{
 	
@@ -12,10 +10,13 @@ public class Node implements Runnable{
 	
 	HashMap<byte[], Block> bitcoinChain;
 
+	public Thread tId;
+	public int nodeId;
 	private PrivateKey privateKey;
 	private PublicKey publicKey;
-	
-	public Node(Vector<Block> bitcoinChain){
+	public Queue<UnspentTxn> myUnspent;
+
+	public Node(int nodeId, Vector<Block> bitcoinChain){
 		//this.bitcoinChain = bitcoinChain;  //ideally it should probe all other nodes to get longest chain.
 		
 		//Generate keys for this node
@@ -23,8 +24,7 @@ public class Node implements Runnable{
 		KeyPair pair = Crypto.generateKeyPair(size);
 		privateKey = pair.getPrivate();
 		publicKey = pair.getPublic();
-		
-		
+		myUnspent = new LinkedList<>();
 	}
 	
 	public void run(){
@@ -38,7 +38,16 @@ public class Node implements Runnable{
 	}
 	
 
-	
+	public Block mineGenesisBlock(){
+		Transaction txn = createCoinbaseTxn();	//Only a coinbase txn will be added in the genesis block
+		Vector<Transaction> vec = new Vector<>();
+		vec.add(Transaction);
+		Block blk = new Block(vec);
+		mineBlock(blk);
+		//Time to broadCast and add to it's own ledger
+		broadCast(Block)
+
+	}
 	public boolean verifyTransaction(Transaction receivedTransaction){
 		
 		//find the hash of this transaction
@@ -57,7 +66,7 @@ public class Node implements Runnable{
 		Transaction coinbaseTxn = new Transaction(true, this.publicKey);
 		return coinbaseTxn;
 	}
-	public Transaction makeTransaction(double amount){
+	public Transaction makeTransaction(double amount){  // need to add transaction ouput one by one by receiver PubK and amount
 
 	}
 	public Vector<Transaction> collectValidTransactions(){
@@ -71,9 +80,9 @@ public class Node implements Runnable{
 		Block newBlock = new Block(bitcoinChain.lastElement().blockHash, vec );
 	}
 
-  	public Block mineBlock(){ 
+  	public boolean mineBlock(Block blk){ //while mining it needs to keep checking whether next block has arrived
 
-  		Block blk = prepareBlock();
+  		//Block blk = prepareBlock();
   		byte[] s = blk.getBlockInFormOfbytes(); //Should return bytes of prevHash+Txns(merkel root)
   		BigInteger nonce = new BigInteger("0");
   		while(true){
@@ -98,16 +107,21 @@ public class Node implements Runnable{
   	}
   	
   	public boolean verifyBlock(Block blockToVerify){
-  		
-  		byte[] blockHash = blockToVerify.blockHash;
-  		
-  		byte[] prevBlockHash = blockToVerify.prevBlockHash;
-  		BigInteger nonce = blockToverify.nonce;
-  		
-  		
+  		if(verifyBlockHash(blockToVerify)){
+  			return true;  //Still transactions need to be verified
+  		}else{
+  			return false;
+  		}
   	
   	}
 
+  	public boolean verifyBlockHash(Block blk){
+
+  		byte[] blockHash = blockToVerify.blockHash;
+  		byte[] x = concatTwoByteArray(blk.nonce.toByteArray(), blk.getBlockInFormOfbytes());
+  		byte[] calculatedHash = Crypto.sha256(x);
+  		return Arrays.equals(blockHash, calculatedHash);
+  	}
   	public byte[] concatTwoByteArray(byte[] one, byte[] two){
   		ByteArrayOutputStream combinedBytes = new ByteArrayOutputStream();
   		combinedBytes.write(one);
@@ -149,4 +163,15 @@ public class Node implements Runnable{
   	}
 
 
+}
+
+class UnspentTxn{
+	public byte[] txnHash; 
+	public int indexInOutOfTxn;
+	public PublicKey pk;
+	public UnspentTxn(byte[] txnHash, int indexInOutOfTxn, PublicKey pk){
+		this.txnHash = txnHash;
+		this.indexInOutOfTxn = indexInOutOfTxn;
+		this.pk = pk;
+	}
 }
