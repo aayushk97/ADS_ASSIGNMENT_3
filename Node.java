@@ -87,7 +87,42 @@ public class Node implements Runnable{
 		//Let's assume transaction is verified for now
 		return true;
 	}
-	
+	public PublicKey getPublickey(){
+		return publicKey;
+	}
+	public void doTransactions(){
+		//when transaction phase start
+		Random rn = new Random();
+		double totalAmount = 0
+		
+		
+		Transaction txn = new Transaction(this.publicKey);
+		while(!myUnspent.isEmpty()){   //Assuming it will add all unspent txns and will keep the change
+			UnspentTxn unstxn = myUnspent.remove();
+			totalAmount+= unstxn.amount;
+			txn.addInputToTxn(unstxn.txnHash, unstxn.indexInOutOfTxn);
+		}
+		
+		if(totalAmount > 0){
+			int numTransaction =  rn.nextInt(100);  //will return a random int these number of output will be included
+			while(numTransaction > 0){
+				double fractionPay = rn.nextDouble();  //will return uniformely distributed [0,1]
+				int randomNodeId = rn.nextInt(numNodes);  //will return a random nodeId
+				double toPay = fractionPay*totalAmount;
+				txn.addOutputToTxn(Main.nodes.get(randomNodeId).getPublickey(), toPay);
+				totalAmount-= toPay;
+			}
+			
+			txn.addOutputToTxn(this.publicKey, totalAmount);
+			signTransaction(txn);
+			broadCast(txn);
+
+		}else{
+			return;
+		}
+
+	}
+
 	public Transaction createCoinbaseTxn(){
 		Transaction coinbaseTxn = new Transaction(true, this.publicKey);
 		return coinbaseTxn;
@@ -117,15 +152,8 @@ public class Node implements Runnable{
   		while(true){
   			byte[] toBeHashed = concatTwoByteArray(nonce.toByteArray(), s);
   			try{
-	            // MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-	            // messageDigest.update(toBeHashed);
-
-	            //byte[] hash = messageDigest.digest();
 
   				byte[] hash = Crypto.sha256(toBeHashed);
-	            // BigInteger number = new BigInteger(1, hash);
-	            // System.out.println("Nuber: " + number);  //1461179
-
 	            if(isitRequiredhash(hash)){
 	            	blk.nonce = nonce;
 	            	blk.blockHash = hash;
@@ -257,9 +285,25 @@ class UnspentTxn{
 	public byte[] txnHash; 
 	public int indexInOutOfTxn;
 	public PublicKey pk;
-	public UnspentTxn(byte[] txnHash, int indexInOutOfTxn, PublicKey pk){
+	public double amount;  //amount received.
+	public UnspentTxn(byte[] txnHash, int indexInOutOfTxn, PublicKey pk, double amt){
 		this.txnHash = txnHash;
 		this.indexInOutOfTxn = indexInOutOfTxn;
 		this.pk = pk;
+		this.amount = amount;
 	}
 }
+
+// class TransactionPool(){  //can votes from all nodes whether they are confirming this txn or not and Majority wins
+// 							//when a node verify  the transaction in increase the confirmations by 1 
+// 							//when at least 51% nodes confirms it should move to confirmed pool or can be taken as confirmed
+// 							// by  checking
+// 	Transaction txn;
+// 	int confirmation;
+// 	int rejections;
+// 	boolean isValid;  //true after 51% confirmations
+// 	public void confirm(){
+// 		confirmation++;
+// 		if()
+// 	}
+// }

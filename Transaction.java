@@ -11,8 +11,9 @@ class Transaction{
 	public Vector<Output> outputTxns;
 
 	public boolean coinbase;  //for mining reward 
-	public Transaction(){
+	public Transaction(PublicKey sendersPublickey){
 		this.coinbase = false;
+		this.sender = sendersPublickey;
 		inputTxns = new Vector<>();
 		outputTxns = new Vector<>();
 	}

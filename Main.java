@@ -99,7 +99,7 @@ public class Main{
                     return false;
                 }
             case 3:
-                System.out.println("3rd?");
+                //System.out.println("3rd?");
                 if((hash[fullBytes] & 0xff) <= 0x1f){
                     System.out.println(hash[fullBytes]);
                     return true;
@@ -114,7 +114,7 @@ public class Main{
                     return false;
                 }
             case 5:
-                System.out.println("5th?");
+                //System.out.println("5th?");
                 if((hash[fullBytes] & 0xff) <= 0x07){
                     System.out.println(hash[fullBytes]);
                     return true;
@@ -142,31 +142,31 @@ public class Main{
     }
 
 
-    public static boolean isFirstwbitsZero2(byte[] hash){
-        System.out.println("w: " + w + " h: " + hash.length);
-        int i =0;
-        System.out.println("...H11: i= "+ i + " " + toHexString(hash));
-        System.out.println("...H22: i= "+ i + " " + toHexString2(hash));
+    // public static boolean isFirstwbitsZero2(byte[] hash){
+    //     System.out.println("w: " + w + " h: " + hash.length);
+    //     int i =0;
+    //     System.out.println("...H11: i= "+ i + " " + toHexString(hash));
+    //     System.out.println("...H22: i= "+ i + " " + toHexString2(hash));
 
-    	for( i =0; i < w && i < hash.length*4; i++){
-    		if(! isZero(hash, i)){
-    			return false;
-    		}
-    	}
+    // 	for( i =0; i < w && i < hash.length*4; i++){
+    // 		if(! isZero(hash, i)){
+    // 			return false;
+    // 		}
+    // 	}
 
-        System.out.println("...H: i= "+ i + " " + toHexString(hash));
-        System.out.println("...H2: i= "+ i + " " + toHexString2(hash));
-        System.out.println("...H3: i= "+ i + " " + Arrays.toString(hash));
+    //     System.out.println("...H: i= "+ i + " " + toHexString(hash));
+    //     System.out.println("...H2: i= "+ i + " " + toHexString2(hash));
+    //     System.out.println("...H3: i= "+ i + " " + Arrays.toString(hash));
 
-    	return true;
-    }
+    // 	return true;
+    // }
 
-    public static boolean isZero(byte[] arr, int i) {
-        int index = i / 8;  //index of the byteArray in which this bit falls
-        int bitPosition = i % 8;  
+    // public static boolean isZero(byte[] arr, int i) {
+    //     int index = i / 8;  //index of the byteArray in which this bit falls
+    //     int bitPosition = i % 8;  
 
-        return (arr[index] >> bitPosition & 1) != 1;
-    }
+    //     return (arr[index] >> bitPosition & 1) != 1;
+    // }
     
     public static byte[] getBytesFromDouble(Double value) {
         byte[] bytes = new byte[Double.BYTES];
