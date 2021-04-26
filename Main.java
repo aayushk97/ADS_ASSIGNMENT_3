@@ -20,7 +20,8 @@ public class Main{
 	//create new nodes
 	System.out.println("Enter the number of nodes in network");
 	numNodes = in.nextInt();
-
+	nodes = new Vector<>(numNodes);
+	
 	//initialize the queues of each node 
 	blockReceivingQueues = new Vector<>();
 	txnReceivingQueues = new Vector<>();
@@ -28,12 +29,20 @@ public class Main{
 	for(int i = 0; i < numNodes; i++){
 		blockReceivingQueues.add(new LinkedList<>());
 		txnReceivingQueues.add(new LinkedList<>());
-	
 	}
 	
-	//create a node
-	//create genesis block using node and add it to blockchain
-
+	//create a genesis block
+	Block genesisBlock = new Block();
+	//create the node
+	for(int i = 0; i < numNodes; i++){
+		Node node = new Node(i, genesisBlock);
+		nodes.add(node);
+	}
+	
+	//run the threads
+	for(int i = 0; i < numNodes; i++){
+		nodes.get(i).start();
+	}
 
 	}
 
