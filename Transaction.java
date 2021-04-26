@@ -20,9 +20,10 @@ class Transaction{
 		this.coinbase = true;
 		inputTxns = new Vector<>();
 		outputTxns = new Vector<>();
-
+		this.sender = minorsPublickey;
 		Output out = new Output(minorsPublickey, Main.MINING_REWARD);
 		outputTxns.add(out);
+
 	}
 	
 	// public int getTransactionID(){

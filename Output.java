@@ -1,5 +1,7 @@
 import java.security.PublicKey;
-import java.io.ByteArrayOutputStream
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 class Output{
 	public PublicKey receiver;
 	public double amount;
@@ -11,8 +13,13 @@ class Output{
 
 	public byte[] getBytes(){
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		bytes.write(receiver.getEncoded());
-		bytes.write(Main.getBytesFromDouble(amount));
+		try{
+			bytes.write(receiver.getEncoded());
+			bytes.write(Main.getBytesFromDouble(amount));
+		}catch(IOException e){
+			System.out.println("Exception");
+		}
+		
 		return bytes.toByteArray();
 	}
 }

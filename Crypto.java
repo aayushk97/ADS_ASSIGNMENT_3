@@ -76,7 +76,7 @@ public class Crypto{
 		}catch(Exception e){
 			System.out.println("Exception: Signature");
 		}
-	
+		return null;
 	}
 	
 	public static boolean verifyECDSASign(PublicKey publicKey, String message, byte[] messageSignature){
@@ -106,7 +106,9 @@ public class Crypto{
 			return signature.verify(messageSignature);
 		}catch(Exception e){
 			System.out.println("Exception: Problem in verifying signature.");
+			e.printStackTrace();
 		}
+		return false;
 	}
 
 }

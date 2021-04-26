@@ -3,6 +3,8 @@ import java.util.*;
 import java.security.*;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
+
 
 class Block{
 
@@ -14,12 +16,9 @@ class Block{
 	//private long timeStamp;
 
 	public Merkle merkleTree; //Merkel tree how?
-	public Block(){
-		//for genesis block
-	}
 	
 	public Block(Vector<Transaction> vec){	//This constructor is for genesis block only
-		byte[] genesis = new byte[32] //256 because hash size is 256bit
+		byte[] genesis = new byte[32]; //256 because hash size is 256bit
 		this.prevBlockHash = genesis;
 		this.merkleTree = new Merkle(vec);  //vec is the list of all transaction related to this block		
 		//calculate hash of this block using prevHash + nonce + Txns + timeStamp
@@ -34,8 +33,23 @@ class Block{
 	public byte[] getBlockInFormOfbytes(){ //leaving nonce the part that needs to be taken as input to hash
 		ByteArrayOutputStream s = new ByteArrayOutputStream();
 		//s.write()
-		s.write(prevBlockHash);
-		s.write(merkleTree.rootHash);
+		try{
+			// System.out.println("Previous hash " + this.prevBlockHash);
+			// if(prevBlockHash != null){
+			// 	System.out.println("Not null " + prevBlockHash);
+			// }
+			s.write(prevBlockHash);
+			// if(merkleTree.rootHash != null){
+			// 	System.out.println("Not null " + prevBlockHash);
+			// }else{
+			// 	System.out.println("Its null");
+			// }
+			s.write(merkleTree.rootHash);
+		}catch(IOException e){
+			System.out.println("Exception in Block");
+
+		}
+		
 		return s.toByteArray();
 	}
 
@@ -45,11 +59,16 @@ class Block{
 		//try{
 			ByteArrayOutputStream outOS = new ByteArrayOutputStream();
 			DataOutputStream dataOS = new DataOutputStream(outOS);
-			dataOS.writeLong(inp);
-			byte[] bytes = outOS.toByteArray();
-			dataOS.close();
-			return bytes;
-		//}catch()
+			try{
+				dataOS.writeLong(inp);
+				byte[] bytes = outOS.toByteArray();
+				dataOS.close();
+				return bytes;
+			}catch(IOException e){
+				System.out.println("Exception");
+			}
+			
+		return null;
 		
 	}
 

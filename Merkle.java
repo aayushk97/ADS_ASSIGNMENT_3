@@ -1,5 +1,6 @@
 import java.util.*;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 
 class Merkle{
@@ -12,6 +13,7 @@ class Merkle{
 
 
     public Merkle(Vector<Transaction> vec){
+        System.out.println("Merkel Constructor");
         this.transactionList = vec;
         this.arity = Main.arity;
         this.tree = new Vector<>();
@@ -28,6 +30,15 @@ class Merkle{
       transactionsHashList = new Vector<>();
 
       for (int i =0; i< transactionList.size(); i++){
+        System.out.println("Here??");
+        byte[] x = transactionList.get(i).getHash();
+        if(x != null){
+        System.out.println("1_Its not null?");
+        System.out.println(x);
+        System.out.println("1_printed");
+        }else{
+          System.out.println("1_NULL");
+        }
         transactionsHashList.add(transactionList.get(i).getHash());
       }
     }
@@ -40,7 +51,12 @@ class Merkle{
       for( i = 0; i < noOfparents; i = i++){
         ByteArrayOutputStream combinedBytes = new ByteArrayOutputStream();
         for(int j = i*this.arity ; j < i + this.arity; j++){
-            combinedBytes.write(vec.get(j));
+            try{
+                combinedBytes.write(vec.get(j));
+            }catch(IOException e){
+              System.out.println("Exception merkle");
+            }
+            
 
         }
         byte res[] = combinedBytes.toByteArray();
@@ -49,7 +65,12 @@ class Merkle{
       //If any transaction or hash remaining at the end 
       ByteArrayOutputStream combinedBytes = new ByteArrayOutputStream();
       for(int j = i*this.arity; j < vec.size(); j++){
-        combinedBytes.write(vec.get(j));
+        try{
+          combinedBytes.write(vec.get(j));
+        }catch(IOException e){
+          System.out.println("Exception in Merkle ");
+        }
+        
       }
       byte res[] = combinedBytes.toByteArray();
       nextlevel.add(res);
@@ -59,7 +80,12 @@ class Merkle{
     }
     private void buidMerkelTree(){
       int size = transactionList.size();
+      System.out.println("TransactionList Size: " + size);
       getHashofTransactions();
+
+      System.out.println("TransactionList Size2: " + transactionsHashList.size());
+      System.out.println("TransactionList Size2: " + transactionsHashList.get(size - 1));
+      
       Vector<byte[]> levelNodes = this.transactionsHashList;
       tree.add(levelNodes);
 
@@ -67,7 +93,21 @@ class Merkle{
         levelNodes = getHashedParent(levelNodes);
         size = levelNodes.size();
       }
+
+      System.out.println("In Merkel: " + tree.size());
+      System.out.println("2: " + tree.get(0).size());
+      byte[] x = tree.get(0).lastElement();
+      if(x != null){
+        System.out.println("Its not null?");
+        System.out.println(x);
+        System.out.println("printed");
+      }else{
+        System.out.println("NULL");
+      }
+      System.out.println("Last: " + x==null + "\n");
+
       this.rootHash = tree.get(tree.size()- 1).get(0);
+      System.out.println("Hash root: " + this.rootHash);
     }
 }
 

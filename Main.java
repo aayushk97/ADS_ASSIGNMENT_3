@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Main{
 	public static final double MINING_REWARD = 50;  //Reward amount
-	public static int w = 4;  //first w bits to be zero
+	public static int w = 16;  //first w bits to be zero
 	public static int numNodes;
 	public static Vector<Node> nodes;
 
@@ -11,26 +11,30 @@ public class Main{
 	
 	static Vector<Queue<Block>> blockReceivingQueues;
 	static Vector<Queue<Transaction>> txnReceivingQueues;
-	
+	// static int n;  //number of nodes
 	public static void main(String[] args){
+	   nodes = new Vector<Node>();
 	
-	
-	Scanner in = new Scanner(System.in);
-	//create a new block chain class
-	//create new nodes
-	System.out.println("Enter the number of nodes in network");
-	numNodes = in.nextInt();
+    	Scanner in = new Scanner(System.in);
+    	//create a new block chain class
+    	//create new nodes 
+    	System.out.println("Enter the number of nodes in network");
+    	numNodes = in.nextInt();
 
-	//initialize the queues of each node 
-	blockReceivingQueues = new Vector<>();
-	txnReceivingQueues = new Vector<>();
-	
-	for(int i = 0; i < numNodes; i++){
-		blockReceivingQueues.add(new LinkedList<>());
-		txnReceivingQueues.add(new LinkedList<>());
-	
-	}
-	
+    	//initialize the queues of each node 
+    	blockReceivingQueues = new Vector<>();
+    	txnReceivingQueues = new Vector<>();
+    	
+    	for(int i = 0; i < numNodes; i++){
+    		blockReceivingQueues.add(new LinkedList<>());
+    		txnReceivingQueues.add(new LinkedList<>());	
+        }
+        for(int i = 0 ; i < numNodes; i++ ){
+            Vector<Block> x = new Vector<>();  // will need to remove this and input appropriatively 
+            nodes.add(new Node(i, x));
+            nodes.get(i).start();
+        }
+
 	//create a node
 	//create genesis block using node and add it to blockchain
 
@@ -58,6 +62,7 @@ public class Main{
     // }
 
     public static boolean isFirstwbitsZero(byte[] hash){
+        System.out.println("w: " + w + " h: " + hash.length);
     	for(int i =0; i < w && i < hash.length*4; i++){
     		if(! isZero(hash, i)){
     			return false;
