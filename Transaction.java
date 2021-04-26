@@ -1,12 +1,13 @@
 import java.security.*;
 import java.util.*;
 import java.io.ByteArrayOutputStream;
+import java.sql.Timestamp;
 
 class Transaction{
 	public PublicKey sender;
 	public byte[] txHash;
 	public byte[] signature;
-
+	public String timeStamp;
 	public Vector<Input> inputTxns;
 	public Vector<Output> outputTxns;
 
@@ -16,17 +17,23 @@ class Transaction{
 		this.sender = sendersPublickey;
 		inputTxns = new Vector<>();
 		outputTxns = new Vector<>();
+		addTimeStamp();
 	}
 	public Transaction(boolean coinbase, PublicKey minorsPublickey){
 		this.coinbase = true;
 		inputTxns = new Vector<>();
 		outputTxns = new Vector<>();
 		this.sender = minorsPublickey;
+		addTimeStamp();
 		Output out = new Output(minorsPublickey, Main.MINING_REWARD);
 		outputTxns.add(out);
 
 	}
 	
+	public void addTimeStamp(){
+		Timestamp tms = new Timestamp(System.currentTimeMillis());
+		this.timeStamp = tms.toString();
+	}
 	// public int getTransactionID(){
 	// 	return transactionID;
 	// }

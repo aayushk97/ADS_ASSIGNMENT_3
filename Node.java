@@ -91,9 +91,10 @@ public class Node implements Runnable{
 		return publicKey;
 	}
 	public void doTransactions(){
-		//when transaction phase start
+		//when transaction phase start just call this function it will randomly create a transaction 
+		// will send fraction of money to other nodes
 		Random rn = new Random();
-		double totalAmount = 0
+		double totalAmount = 0;
 		
 		
 		Transaction txn = new Transaction(this.publicKey);
@@ -104,13 +105,24 @@ public class Node implements Runnable{
 		}
 		
 		if(totalAmount > 0){
-			int numTransaction =  rn.nextInt(100);  //will return a random int these number of output will be included
+			int numTransaction =  rn.nextInt((int)(Main.numNodes*0.7));  //will return a random int these number of output will be included
+			Set<Integer> alreadySent = new HashSet<>();
+			if (numTransaction == 0){
+				numTransaction = Main.numNodes/2;
+				if(numTransaction == 0){
+					System.out.println("Only one node network");
+				}
+			}
 			while(numTransaction > 0){
 				double fractionPay = rn.nextDouble();  //will return uniformely distributed [0,1]
-				int randomNodeId = rn.nextInt(numNodes);  //will return a random nodeId
-				double toPay = fractionPay*totalAmount;
-				txn.addOutputToTxn(Main.nodes.get(randomNodeId).getPublickey(), toPay);
-				totalAmount-= toPay;
+				int randomNodeId = rn.nextInt(Main.numNodes);  //will return a random nodeId
+				if(randomNodeId!= this.nodeId && !alreadySent.contains(randomNodeId)){
+					double toPay = fractionPay*totalAmount;
+					txn.addOutputToTxn(Main.nodes.get(randomNodeId).getPublickey(), toPay);
+					totalAmount-= toPay;
+					alreadySent.add(randomNodeId);
+				}
+				
 			}
 			
 			txn.addOutputToTxn(this.publicKey, totalAmount);
@@ -235,6 +247,12 @@ public class Node implements Runnable{
 			}
 		}
 
+		try{
+			bytes.write(txn.timeStamp.getBytes("UTF-8"));
+		}catch(IOException e){
+			System.out.println("Exception");
+		}
+		
 		return bytes.toByteArray();
 	}
 

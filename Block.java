@@ -4,6 +4,7 @@ import java.security.*;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.sql.Timestamp;
 
 
 class Block{
@@ -14,6 +15,7 @@ class Block{
 
 	public byte[] prevBlockHash;
 	public BigInteger nonce;
+	public String timeStamp;
 	//private long timeStamp;
 
 	public Merkle merkleTree; //Merkel tree how?
@@ -23,12 +25,19 @@ class Block{
 		this.prevBlockHash = genesis;
 		this.merkleTree = new Merkle(vec);  //vec is the list of all transaction related to this block		
 		//calculate hash of this block using prevHash + nonce + Txns + timeStamp
+		addTimeStamp();
 	}
 
 	public Block(byte[] prevHash, Vector<Transaction> vec){
 		this.prevBlockHash = prevHash;
 		this.merkleTree = new Merkle(vec);  //vec is the list of all transaction related to this block		
 		//calculate hash of this block using prevHash + nonce + Txns + timeStamp
+		addTimeStamp();
+	}
+
+	public void addTimeStamp(){
+		Timestamp tms = new Timestamp(System.currentTimeMillis());
+		this.timeStamp = tms.toString();
 	}
 
 	public byte[] getBlockInFormOfbytes(){ //leaving nonce the part that needs to be taken as input to hash
@@ -51,6 +60,12 @@ class Block{
 
 		}
 		
+		try{
+			s.write(timeStamp.getBytes("UTF-8"));
+		}catch(IOException e){
+			System.out.println("Exception");
+		}
+
 		return s.toByteArray();
 	}
 
