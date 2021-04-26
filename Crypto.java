@@ -59,6 +59,7 @@ public class Crypto{
 	}
 	
 	public static byte[] applyECDSASign(PrivateKey privateKey, byte[] input){
+		byte[] signatureResult = new byte[0];
 		try{
 			
 			Signature signature = Signature.getInstance("SHA256withECDSA");
@@ -70,12 +71,14 @@ public class Crypto{
 			signature.update(input);
 		
 			//calculate the signature
-			byte[] signatureResult = signature.sign();
+			signatureResult = signature.sign();
 		
-			return signatureResult;
+			
 		}catch(Exception e){
 			System.out.println("Exception: Signature");
 		}
+		
+		return signatureResult;
 	
 	}
 	
@@ -106,7 +109,9 @@ public class Crypto{
 			return signature.verify(messageSignature);
 		}catch(Exception e){
 			System.out.println("Exception: Problem in verifying signature.");
+			return false;
 		}
+		
 	}
 
 }
