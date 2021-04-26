@@ -13,8 +13,9 @@ class Test4{
 		PrivateKey sk = pair.getPrivate();
 		PublicKey pk = pair.getPublic();
 		String afterSign;
-		
-		byte[] bytesMsg = Crypto.applyECDSASign(sk, Crypto.sha256(msg));
+		String x = Crypto.sha256(msg);
+		System.out.println("KK: " + x);
+		byte[] bytesMsg = Crypto.applyECDSASign(sk, x);
 		
 		boolean verified = Crypto.verifyECDSASign(pk, Crypto.sha256(msg), bytesMsg);
 		

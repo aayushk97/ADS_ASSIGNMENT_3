@@ -59,6 +59,7 @@ public class Crypto{
 	}
 	
 	public static byte[] applyECDSASign(PrivateKey privateKey, byte[] input){
+		byte[] signatureResult = new byte[0];
 		try{
 			
 			Signature signature = Signature.getInstance("SHA256withECDSA");
@@ -70,13 +71,36 @@ public class Crypto{
 			signature.update(input);
 		
 			//calculate the signature
-			byte[] signatureResult = signature.sign();
+			signatureResult = signature.sign();
 		
-			return signatureResult;
+			
 		}catch(Exception e){
 			System.out.println("Exception: Signature");
 		}
-		return null;
+		return signatureResult;
+
+	}
+	public static byte[] applyECDSASign(PrivateKey privateKey, String input){
+		byte[] signatureResult = new byte[0];
+		try{
+			
+			Signature signature = Signature.getInstance("SHA256withECDSA");
+			signature.initSign(privateKey);
+		
+			byte[] bytes = input.getBytes("UTF-8");
+		
+			//Add data to the signature
+			signature.update(bytes);
+		
+			//calculate the signature
+			signatureResult = signature.sign();
+		
+			
+		}catch(Exception e){
+			System.out.println("Exception: Signature");
+		}
+		return signatureResult;
+
 	}
 	
 	public static boolean verifyECDSASign(PublicKey publicKey, String message, byte[] messageSignature){
@@ -108,9 +132,9 @@ public class Crypto{
 			System.out.println("Exception: Problem in verifying signature.");
 			e.printStackTrace();
 		}
-		return false;
-	}
-
+	
+			return false;
+		}
 }
 
 //Try catch block was added to prevent NoSuchAlgorithmException

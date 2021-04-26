@@ -4,11 +4,13 @@ import java.security.*;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.io.IOException;
+
 public class Node implements Runnable{
 	
 	static final BigInteger ONE = new BigInteger("1");
 	
 	HashMap<byte[], Block> bitcoinChain;
+
 
 	public Thread tId;
 	public int nodeId;
@@ -19,10 +21,12 @@ public class Node implements Runnable{
 	private Queue<Block> blockReceiveQ;
 	private Queue<Transaction> txnReceiveQ;
 
-	public Node(int nodeId, Vector<Block> bitcoinChain){
+	public Node(int nodeId){
 		//this.bitcoinChain = bitcoinChain;  //ideally it should probe all other nodes to get longest chain.
 		
 		//Generate keys for this node
+		bitcoinChain = new HashMap<>();
+		this.nodeId = nodeId;
 		int size = 256; 
 		KeyPair pair = Crypto.generateKeyPair(size);
 		privateKey = pair.getPrivate();

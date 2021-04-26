@@ -9,6 +9,7 @@ import java.io.IOException;
 class Block{
 
 	//Block header
+	
 	public byte[] blockHash; //sha256(nonce||prev||merkelRoot)
 
 	public byte[] prevBlockHash;

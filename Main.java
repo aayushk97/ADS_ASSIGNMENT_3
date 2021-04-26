@@ -1,9 +1,11 @@
 import java.util.Scanner;
+import java.math.BigInteger; 
+
 import java.util.*;
 
 public class Main{
 	public static final double MINING_REWARD = 50;  //Reward amount
-	public static int w = 16;  //first w bits to be zero
+	public static int w = 15;  //first w bits to be zero
 	public static int numNodes;
 	public static Vector<Node> nodes;
 
@@ -30,8 +32,8 @@ public class Main{
     		txnReceivingQueues.add(new LinkedList<>());	
         }
         for(int i = 0 ; i < numNodes; i++ ){
-            Vector<Block> x = new Vector<>();  // will need to remove this and input appropriatively 
-            nodes.add(new Node(i, x));
+            //Vector<Block> x = new Vector<>();  // will need to remove this and input appropriatively 
+            nodes.add(new Node(i));
             nodes.get(i).start();
         }
 
@@ -51,6 +53,16 @@ public class Main{
         }
         return sb.toString();
     }
+
+    public static String toHexString2(byte[] b){
+        BigInteger number = new BigInteger(1, b);
+        StringBuilder hashInHex = new StringBuilder(number.toString(16));
+        //System.out.println("Length: " + hashInHex.length());
+        while(hashInHex.length() < 64) hashInHex.insert(0, '0');
+        //System.out.println("Length: " + hashInHex.length());
+
+        return hashInHex.toString();
+    }
     // public static String toBitString(byte[] b)
     // {
     //     StringBuilder sb = new StringBuilder();
@@ -60,14 +72,91 @@ public class Main{
     //     }
     //     return sb.toString();
     // }
-
     public static boolean isFirstwbitsZero(byte[] hash){
+        //There was some problem in last isFirstwbitsZero..this is working fine
+        int fullBytes = w/8;
+        int r = w%8;
+        for(int i = 0 ; i < fullBytes; i++){
+            if(hash[i] != 0){
+                return false;
+            }
+        }
+        //aByte & 0xff
+        switch(r){
+            case 0:
+                return true;
+            case 1:
+                if(hash[fullBytes] <= 0x7f){
+                    return true;
+                }else{
+                    return false;
+                }
+            case 2:
+                if((hash[fullBytes] & 0xff) <= 0x3f){
+                    System.out.println(hash[fullBytes]);
+                    return true;
+                }else{
+                    return false;
+                }
+            case 3:
+                System.out.println("3rd?");
+                if((hash[fullBytes] & 0xff) <= 0x1f){
+                    System.out.println(hash[fullBytes]);
+                    return true;
+                }else{
+                    return false;
+                }
+            case 4:
+                if((hash[fullBytes] & 0xff) <= 0x0f){
+                    System.out.println(hash[fullBytes]);
+                    return true;
+                }else{
+                    return false;
+                }
+            case 5:
+                System.out.println("5th?");
+                if((hash[fullBytes] & 0xff) <= 0x07){
+                    System.out.println(hash[fullBytes]);
+                    return true;
+                }else{
+                    return false;
+                }
+            case 6:
+                if((hash[fullBytes] & 0xff) <= 0x03){
+                    System.out.println(hash[fullBytes]);
+                    return true;
+                }else{
+                    return false;
+                }
+            case 7:
+                if((hash[fullBytes] & 0xff) <= 0x01){
+                    System.out.println(hash[fullBytes]);
+                    return true;
+                }else{
+                    return false;
+                }
+            default:
+                System.out.println("It should never come here");
+                return false;
+        }
+    }
+
+
+    public static boolean isFirstwbitsZero2(byte[] hash){
         System.out.println("w: " + w + " h: " + hash.length);
-    	for(int i =0; i < w && i < hash.length*4; i++){
+        int i =0;
+        System.out.println("...H11: i= "+ i + " " + toHexString(hash));
+        System.out.println("...H22: i= "+ i + " " + toHexString2(hash));
+
+    	for( i =0; i < w && i < hash.length*4; i++){
     		if(! isZero(hash, i)){
     			return false;
     		}
     	}
+
+        System.out.println("...H: i= "+ i + " " + toHexString(hash));
+        System.out.println("...H2: i= "+ i + " " + toHexString2(hash));
+        System.out.println("...H3: i= "+ i + " " + Arrays.toString(hash));
 
     	return true;
     }
@@ -87,4 +176,5 @@ public class Main{
         }
         return bytes;
     }
+
 }
