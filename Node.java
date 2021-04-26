@@ -16,7 +16,9 @@ public class Node implements Runnable{
 	private PublicKey publicKey;
 	public Queue<UnspentTxn> myUnspent;
 
-	public Node(int nodeId, Vector<Block> bitcoinChain){
+	public Node(int nodeId, Block genesisBlock){
+		//put genesis block in blockchain
+		
 		//this.bitcoinChain = bitcoinChain;  //ideally it should probe all other nodes to get longest chain.
 		
 		//Generate keys for this node
@@ -25,11 +27,13 @@ public class Node implements Runnable{
 		privateKey = pair.getPrivate();
 		publicKey = pair.getPublic();
 		myUnspent = new LinkedList<>();
+		System.out.println("This node "+nodeId+" was initialized.");
 	}
 	
 	public void run(){
-	
-		Transaction receivedTransaction;
+		
+		System.out.println("This node "+nodeId+" is running.");
+		Transaction receivedTransaction = null;
 		//First we need to validate the transaction?
 		//Then we verify it
 		boolean verified = verifyTransaction(receivedTransaction);
@@ -37,19 +41,28 @@ public class Node implements Runnable{
 		//if verified the go forward else reject it
 	}
 	
-
+	public void start(){
+		if(tId == null){
+			tId = new Thread(this);
+			tId.start();
+		}
+	}
+	
+	
 	public Block mineGenesisBlock(){
 		Transaction txn = createCoinbaseTxn();	//Only a coinbase txn will be added in the genesis block
 		Vector<Transaction> vec = new Vector<>();
-		vec.add(Transaction);
+		vec.add(txn);
 		Block blk = new Block(vec);
 		mineBlock(blk);
 		//Time to broadCast and add to it's own ledger
-		broadCast(Block)
-
+		//==Commented to run
+		//broadCast(Block)
+		return blk;
 	}
 	public boolean verifyTransaction(Transaction receivedTransaction){
 		
+		/* Commented
 		//find the hash of this transaction
 		//Edit: Add time too?
 		String data = receivedTransaction.prevHash + Crypto.getKeyInString(receivedTransaction.receiver) + Float.toString(receivedTransaction.amount);
@@ -58,7 +71,8 @@ public class Node implements Runnable{
 		
 		//verify the signature 
 		return Crypto.verifyECDSASign(reveivedTranasction.sender, hash, receivedTransaction.txHash);	
-		
+		*/
+		return false;
 	
 	}
 	
@@ -66,21 +80,24 @@ public class Node implements Runnable{
 		Transaction coinbaseTxn = new Transaction(true, this.publicKey);
 		return coinbaseTxn;
 	}
+	
 	public Transaction makeTransaction(double amount){  // need to add transaction ouput one by one by receiver PubK and amount
-
+		return null;
 	}
+	
 	public Vector<Transaction> collectValidTransactions(){
 		//Verify the available transaction and add them in block
-		
+		return null;
 	}
 
 	public Block prepareBlock(){
 		//To create a block wtih available new transactions
 		Vector<Transaction> vec = collectValidTransactions();
-		Block newBlock = new Block(bitcoinChain.lastElement().blockHash, vec );
+		//Comented: Block newBlock = new Block(bitcoinChain.lastElement().blockHash, vec );		
+		return null;
 	}
 
-  	public boolean mineBlock(Block blk){ //while mining it needs to keep checking whether next block has arrived
+  	public Block mineBlock(Block blk){ //while mining it needs to keep checking whether next block has arrived
 
   		//Block blk = prepareBlock();
   		byte[] s = blk.getBlockInFormOfbytes(); //Should return bytes of prevHash+Txns(merkel root)
@@ -97,8 +114,9 @@ public class Node implements Runnable{
 	            	break;
 	            }
 	    		nonce = nonce.add(ONE);
-	        }catch(UnsupportedEncodingException e){
-	            System.out.println("Exception");
+	        }catch(Exception e){
+	            throw new RuntimeException (e);
+	            //System.out.println("Exception");
 	        }
 	        System.out.println("Still mining current nonce: " + nonce);
 	   
@@ -117,26 +135,30 @@ public class Node implements Runnable{
 
   	public boolean verifyBlockHash(Block blk){
 
-  		byte[] blockHash = blockToVerify.blockHash;
+  		byte[] blockHash = blk.blockHash;
   		byte[] x = concatTwoByteArray(blk.nonce.toByteArray(), blk.getBlockInFormOfbytes());
   		byte[] calculatedHash = Crypto.sha256(x);
   		return Arrays.equals(blockHash, calculatedHash);
   	}
   	public byte[] concatTwoByteArray(byte[] one, byte[] two){
   		ByteArrayOutputStream combinedBytes = new ByteArrayOutputStream();
+  		try{
   		combinedBytes.write(one);
   		combinedBytes.write(two);
+  		}catch(Exception e){
+  			throw new RuntimeException (e);
+  		}
   		return combinedBytes.toByteArray();
 
   	}
 
   	public boolean verifyTxnSignature(Transaction txn){
-  		byte[] rawData = getTxnBytes(Transaction txn);
+  		byte[] rawData = getTxnBytes(txn);
   		return Crypto.verifyECDSASign(txn.sender, rawData, txn.signature);
   	}
   	public void signTransaction(Transaction txn){
 
-        byte[] rawData = getTxnBytes(Transaction txn);
+        byte[] rawData = getTxnBytes(txn);
         byte[] signature = Crypto.applyECDSASign(this.privateKey, rawData);
         txn.txHash = Crypto.sha256(rawData);
         txn.signature = signature;
@@ -144,7 +166,7 @@ public class Node implements Runnable{
     }
   	public byte[] getTxnBytes(Transaction txn){
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-
+		try{
 		int inpSize = txn.inputTxns.size();
 		for(int i = 0; i < inpSize; i++){
 			bytes.write(txn.inputTxns.get(i).refTxn);
@@ -152,9 +174,11 @@ public class Node implements Runnable{
 
 		int outSize = txn.outputTxns.size();
 		for (int i = 0; i < outSize; i++ ){
-			bytes.write(txn.outputTxns.get(i).getBytes())
+			bytes.write(txn.outputTxns.get(i).getBytes());
 		}
-
+		}catch(Exception e){
+  			throw new RuntimeException (e);
+  		}
 		return bytes.toByteArray();
 	}
 
