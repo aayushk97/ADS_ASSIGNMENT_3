@@ -33,6 +33,7 @@ class Transaction{
 	public void addTimeStamp(){
 		Timestamp tms = new Timestamp(System.currentTimeMillis());
 		this.timeStamp = tms.toString();
+		
 	}
 	// public int getTransactionID(){
 	// 	return transactionID;

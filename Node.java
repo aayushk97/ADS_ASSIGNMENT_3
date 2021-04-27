@@ -121,14 +121,22 @@ public class Node implements Runnable{
 					txn.addOutputToTxn(Main.nodes.get(randomNodeId).getPublickey(), toPay);
 					totalAmount-= toPay;
 					alreadySent.add(randomNodeId);
+					numTransaction--;
 				}
 				
 			}
-			
-			txn.addOutputToTxn(this.publicKey, totalAmount);
+			boolean flag = false;
+			if(totalAmount > 0){
+				txn.addOutputToTxn(this.publicKey, totalAmount);
+				flag = true;
+			}
 			signTransaction(txn);
+			if(flag){
+				myUnspent.add(new UnspentTxn(txn.txHash, txn.outputTxns.size() - 1, this.publicKey, totalAmount));
+				//UnspentTxn(byte[] txnHash, int indexInOutOfTxn, PublicKey pk, double amt)
+			}
 			broadCast(txn);
-
+			///totalAmount = 0;
 		}else{
 			return;
 		}
