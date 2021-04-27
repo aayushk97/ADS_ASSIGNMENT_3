@@ -20,12 +20,15 @@ class Block{
 
 	public Merkle merkleTree; //Merkel tree how?
 	
+	public Vector<Transaction> transactionsInBlock;
+	
 	public Block(Vector<Transaction> vec){	//This constructor is for genesis block only
 		byte[] genesis = new byte[32]; //256 because hash size is 256bit
 		this.prevBlockHash = genesis;
 		this.merkleTree = new Merkle(vec);  //vec is the list of all transaction related to this block		
 		//calculate hash of this block using prevHash + nonce + Txns + timeStamp
 		addTimeStamp();
+		transactionsInBlock = vec;
 	}
 
 	public Block(byte[] prevHash, Vector<Transaction> vec){
