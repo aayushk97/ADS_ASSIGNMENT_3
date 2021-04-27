@@ -41,14 +41,16 @@ public class Node implements Runnable{
 		
 		//initialize unspect queues
 		unspentTxns = new HashMap<>();
-		for(int i =0; i < Main.numNodes; i++){
-			unspentTxns.put(Main.nodes.get(i).publicKey, new Vector<UnspentTxn>());
-		}
+		
 
 		validTransactions = new Vector<>();
 	}
 	
 	public void run(){
+
+		for(int i =0; i < Main.numNodes; i++){
+			unspentTxns.put(Main.nodes.get(i).publicKey, new Vector<UnspentTxn>());
+		}
 		//Add a genesis block
 		System.out.println("In running " + nodeId);
 		mineGenesisBlock();
@@ -199,7 +201,7 @@ public class Node implements Runnable{
 			// Vector<UnspentTxn> unspentOthers = new Vector<>();
 			// unspentOthers.add(unspentOthersTxn);
 			// unspentTxns.put(txnInBlock.outputTxns.get(0).receiver, unspentOthers);
-			unspentTxns.get(this.publicKey).add(unspentOthers)
+			unspentTxns.get(this.publicKey).add(unspentOthersTxn);
 
 			
 			
