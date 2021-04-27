@@ -9,15 +9,18 @@ public class Node implements Runnable{
 	
 	static final BigInteger ONE = new BigInteger("1");
 	
-	HashMap<byte[], Block> bitcoinChain;
+	Vector<Block> bitcoinChain;
 
 
 	public Thread tId;
 	public int nodeId;
 	private PrivateKey privateKey;
 	private PublicKey publicKey;
-	public Queue<UnspentTxn> myUnspent;
+	
+	public HashMap<PublicKey, Vector<UnspentTxn>> unspentTxns;
 
+	public Vector<Transaction> validTransactions;
+	
 	private Queue<Block> blockReceiveQ;
 	private Queue<Transaction> txnReceiveQ;
 
@@ -25,30 +28,116 @@ public class Node implements Runnable{
 		//this.bitcoinChain = bitcoinChain;  //ideally it should probe all other nodes to get longest chain.
 		
 		//Generate keys for this node
-		bitcoinChain = new HashMap<>();
+		bitcoinChain = new Vector<>();
 		this.nodeId = nodeId;
+		
 		int size = 256; 
 		KeyPair pair = Crypto.generateKeyPair(size);
 		privateKey = pair.getPrivate();
 		publicKey = pair.getPublic();
-		myUnspent = new LinkedList<>();
 
-		Queue<Block> blockReceiveQ = Main.blockReceivingQueues.get(nodeId);
-		Queue<Transaction> txnReceiveQ = Main.txnReceivingQueues.get(nodeId);
-
+		Queue<Block> blockReceiveQ = new LinkedList<>();
+		Queue<Transaction> txnReceiveQ = new LinkedList<>();
+		
+		//initialize unspect queues
+		unspentTxns = new HashMap<>();
+		
+		validTransactions = new Vector<>();
 	}
 	
 	public void run(){
-	
-		// Transaction receivedTransaction;
-		// //First we need to validate the transaction?
-		// //Then we verify it
-		// boolean verified = verifyTransaction(receivedTransaction);
-		
-		//if verified the go forward else reject it
+		//Add a genesis block
 		System.out.println("In running " + nodeId);
 		mineGenesisBlock();
-		System.out.println("Mined genesis block");
+		System.out.println("BlockChain size for node: "+nodeId+" is :"+bitcoinChain.size());
+		blockReceiveQ = Main.blockReceivingQueues.get(nodeId);
+		txnReceiveQ = Main.txnReceivingQueues.get(nodeId);
+		blockReceiveQ.clear();	
+		Vector<UnspentTxn> myUnspent = unspentTxns.get(publicKey);
+		if(myUnspent == null)
+		System.out.println("Unspent size: "+nodeId+" is : 0");
+		else
+		System.out.println("Unspent size: "+nodeId+" is :"+myUnspent.size());
+		
+		while(true){
+		
+			//we start validating the received transactions 
+			while(txnReceiveQ.size() > 0){
+				Transaction receivedTxn = txnReceiveQ.remove();
+				boolean verified = verifyTransaction(receivedTxn);
+				
+				if(verified){
+					validTransactions.add(receivedTxn);
+				
+				}
+			
+			}
+			
+			//first we check if max no of transactions are collected by the node
+			if(validTransactions.size() >= Main.maxTransactionInBlock){
+				
+				System.out.println("Transcations are collected and block is being made");
+				
+				Vector<Transaction> vec = new Vector<>();
+				
+				//Add limited no of transactions to new block
+				for(int i = 0; i < Main.maxTransactionInBlock; i++){
+					Transaction txn = txnReceiveQ.remove();
+					vec.add(txn);
+				}
+				
+				Block blk = new Block(vec);
+				
+				boolean minedFirst = mineBlock(blk);
+				
+				if(minedFirst){
+					broadCast(blk);
+					bitcoinChain.add(blk);
+					System.out.println("Current length block mined by node "+nodeId);
+				}else{
+			
+					blockReceiveQ = Main.blockReceivingQueues.get(nodeId);
+			
+					blk = blockReceiveQ.remove();
+			
+					boolean verifiedBlock = verifyBlock(blk);
+					while(!verifiedBlock){
+						blk = blockReceiveQ.remove();
+						verifiedBlock = verifyBlock(blk);
+					}
+			
+					bitcoinChain.add(blk);
+					System.out.println("current length block was mined by other node but inserted by node: "+nodeId);
+					//we now validate the transactions in this block and add the validated ones to unspentTxns
+					/*Transaction txnInBlock = blk.transactionsInBlock.get(0);
+					UnspentTxn unspentOthersTxn = new UnspentTxn(getTxnBytes(txnInBlock), 0,  txnInBlock.outputTxns.get(0).receiver, txnInBlock.outputTxns.get(0).amount); 
+					Vector<UnspentTxn> unspentOthers = new Vector<>();
+					unspentOthers.add(unspentOthersTxn);
+					unspentTxns.put(txnInBlock.outputTxns.get(0).receiver, unspentOthers);
+					*/
+			
+		}
+			
+			}
+			
+			//perform a Transaction
+			Random random = new Random();
+			
+			//generate a number between 1 to 10
+			double x = 1+random.nextInt(10);
+			boolean sent = false;
+			if(x <= Main.probToSend*10){
+				sent = doTransactions();
+				
+			}
+			
+			if(sent) System.out.println("Transaction was sent by "+nodeId);
+				
+			
+		
+		
+		}
+		
 	}
 	
 	public void start(){
@@ -63,34 +152,118 @@ public class Node implements Runnable{
 	public void mineGenesisBlock(){
 		Transaction txn = createCoinbaseTxn();	//Only a coinbase txn will be added in the genesis block
 		signTransaction(txn);
+		
+		//Store all the created transaction
 		Vector<Transaction> vec = new Vector<>();
 		vec.add(txn);
-		Block blk = new Block(vec);
-		mineBlock(blk);
+		
+		
 		//Time to broadCast and add to it's own ledger
 		System.out.println("Signature: "+ verifyTxnSignature(txn));
-		broadCast(blk);
+		
+		//Add the transactions to block
+		Block blk = new Block(vec);
+		
+		boolean minedFirst = mineBlock(blk);
+		if(minedFirst){
+			broadCast(blk);
 
-		bitcoinChain.put(blk.blockHash, blk);
+			bitcoinChain.add(blk);
+			System.out.println("Genesis block mined by node "+nodeId);
+			
+			//add this transaction to unspent trnasaction
+			UnspentTxn myUnspentTxn = new UnspentTxn(getTxnBytes(txn), 0, publicKey, txn.outputTxns.get(0).amount);
+			Vector<UnspentTxn> myUnspent = new Vector<>();
+			myUnspent.add(myUnspentTxn);
+			unspentTxns.put(publicKey, myUnspent);
+		}else{
+			
+			blockReceiveQ = Main.blockReceivingQueues.get(nodeId);
+			
+			blk = blockReceiveQ.remove();
+			
+			boolean verifiedBlock = verifyBlock(blk);
+			while(!verifiedBlock){
+				blk = blockReceiveQ.remove();
+				verifiedBlock = verifyBlock(blk);
+			}
+			
+			bitcoinChain.add(blk);
+			System.out.println("Genesis block was mined by other node but inserted by node: "+nodeId);
+			Transaction txnInBlock = blk.transactionsInBlock.get(0);
+			UnspentTxn unspentOthersTxn = new UnspentTxn(getTxnBytes(txnInBlock), 0,  txnInBlock.outputTxns.get(0).receiver, txnInBlock.outputTxns.get(0).amount); 
+			Vector<UnspentTxn> unspentOthers = new Vector<>();
+			unspentOthers.add(unspentOthersTxn);
+			unspentTxns.put(txnInBlock.outputTxns.get(0).receiver, unspentOthers);
+			
+			
+		}
 	}
+	
 	public boolean verifyTransaction(Transaction receivedTransaction){
 		
-		// //find the hash of this transaction
-		// //Edit: Add time too?
-		// String data = receivedTransaction.prevHash + Crypto.getKeyInString(receivedTransaction.receiver) + Float.toString(receivedTransaction.amount);
-	
-		// String hash = Crypto.sha256(data);
+		 //find the hash of this transaction
+		 //Edit: Add time too?
+		boolean verified = verifyTxnSignature(receivedTransaction);	
+		if(!verified) return false;
 		
-		// //verify the signature 
-		// return Crypto.verifyECDSASign(reveivedTranasction.sender, hash, receivedTransaction.txHash);	
-
-		//Let's assume transaction is verified for now
+		boolean validate = validateTransaction(receivedTransaction);
+		
 		return true;
 	}
+	
+	public boolean validateTransaction(Transaction receivedTransaction){
+		
+		Vector<UnspentTxn> unspentTxnNode = unspentTxns.get(receivedTransaction.sender);
+		
+		double amountPresent = 0.0, amountTransferred = 0.0;
+		
+		//Get total unspent Transaction
+		for(UnspentTxn t: unspentTxnNode){
+			amountPresent += t.amount;
+		} 
+		
+		//Get the amount that was sent in transaction
+		for(int i = 0; i < receivedTransaction.outputTxns.size(); i++){
+			amountTransferred += receivedTransaction.outputTxns.get(i).amount;
+		}
+		
+		//The transaction is valid
+		if(amountPresent <= amountTransferred){
+			for(int i = 0; i < unspentTxnNode.size(); i++){
+				for(int j = 0; j < receivedTransaction.inputTxns.size(); i++){
+					if(Arrays.equals(unspentTxnNode.get(i).txnHash, receivedTransaction.inputTxns.get(j).refTxn)){
+						unspentTxnNode.remove(i);
+					}
+				}
+			}
+			
+			unspentTxns.put(receivedTransaction.sender, unspentTxnNode);
+			
+			//Add new unspent transactions
+			for(int i = 0; i < receivedTransaction.outputTxns.size(); i++){
+				UnspentTxn unspent = new UnspentTxn(receivedTransaction.txHash, i, receivedTransaction.outputTxns.get(i).receiver, receivedTransaction.outputTxns.get(i).amount);
+				
+				Vector<UnspentTxn> unspentTxnNode2 = unspentTxns.get(receivedTransaction.outputTxns.get(i).receiver);
+				
+				unspentTxnNode.add(unspent);
+				
+				unspentTxns.put(receivedTransaction.outputTxns.get(i).receiver, unspentTxnNode2);	
+			}
+			
+			return true;
+		}
+		
+		//else the transaction is not valid
+		return false;
+	}
+	
+	
 	public PublicKey getPublickey(){
 		return publicKey;
 	}
-	public void doTransactions(){
+	
+	public boolean doTransactions(){
 		//when transaction phase start just call this function it will randomly create a transaction 
 		// will send fraction of money to other nodes
 		Random rn = new Random();
@@ -98,11 +271,13 @@ public class Node implements Runnable{
 		
 		
 		Transaction txn = new Transaction(this.publicKey);
+		Vector<UnspentTxn> myUnspent = unspentTxns.get(publicKey);
 		while(!myUnspent.isEmpty()){   //Assuming it will add all unspent txns and will keep the change
-			UnspentTxn unstxn = myUnspent.remove();
+			UnspentTxn unstxn = myUnspent.remove(0);
 			totalAmount+= unstxn.amount;
 			txn.addInputToTxn(unstxn.txnHash, unstxn.indexInOutOfTxn);
 		}
+		
 		
 		if(totalAmount > 0){
 			int numTransaction =  rn.nextInt((int)(Main.numNodes*0.7));  //will return a random int these number of output will be included
@@ -121,24 +296,17 @@ public class Node implements Runnable{
 					txn.addOutputToTxn(Main.nodes.get(randomNodeId).getPublickey(), toPay);
 					totalAmount-= toPay;
 					alreadySent.add(randomNodeId);
-					numTransaction--;
 				}
 				
 			}
-			boolean flag = false;
-			if(totalAmount > 0){
-				txn.addOutputToTxn(this.publicKey, totalAmount);
-				flag = true;
-			}
+			
+			txn.addOutputToTxn(this.publicKey, totalAmount);
 			signTransaction(txn);
-			if(flag){
-				myUnspent.add(new UnspentTxn(txn.txHash, txn.outputTxns.size() - 1, this.publicKey, totalAmount));
-				//UnspentTxn(byte[] txnHash, int indexInOutOfTxn, PublicKey pk, double amt)
-			}
 			broadCast(txn);
-			///totalAmount = 0;
+			return true;
+
 		}else{
-			return;
+			return false;
 		}
 
 	}
@@ -154,6 +322,7 @@ public class Node implements Runnable{
 
 	public Vector<Transaction> collectValidTransactions(){
 		//Verify the available transaction and add them in block
+		
 		return null;
 	}
 
@@ -169,7 +338,11 @@ public class Node implements Runnable{
   		//Block blk = prepareBlock();
   		byte[] s = blk.getBlockInFormOfbytes(); //Should return bytes of prevHash+Txns(merkel root)
   		BigInteger nonce = new BigInteger("0");
+  		//System.out.println("Size of the block" + Main.blockReceivingQueues.get(nodeId).size());
   		while(true){
+  			//check if other nodes have not already finished mining blocks and broadcasted
+  			if(Main.blockReceivingQueues.get(nodeId).size() != 0) return false;
+  			
   			byte[] toBeHashed = concatTwoByteArray(nonce.toByteArray(), s);
   			try{
 
@@ -188,6 +361,7 @@ public class Node implements Runnable{
 	   
   		}
   		System.out.println("Mined done!");
+  		
   		return true;
   	}
   	
