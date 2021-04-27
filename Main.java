@@ -6,11 +6,11 @@ import java.util.*;
 public class Main{
 	
 	public static final double MINING_REWARD = 50;  //Reward amount
-	public static int w = 5;  //first w bits to be zero
+	public static int w = 10;  //first w bits to be zero
 	public static int numNodes;
 	public static Vector<Node> nodes;
 
-    	public static int arity = 2; //default
+    public static int arity = 2; //default
 	
 	public static int maxTransactionInBlock = 100;
 	public static double probToSend = 0.2;
@@ -37,11 +37,13 @@ public class Main{
         	
         	//initialize each node
         	for(int i = 0 ; i < numNodes; i++ ){
-            		//Vector<Block> x = new Vector<>();  // will need to remove this and input appropriatively 
             		nodes.add(new Node(i));
-            		nodes.get(i).start();
         	}
         	
+            for(int i = 0 ; i < numNodes; i++ ){
+                    nodes.get(i).start();
+            }
+
         	for(int i =0; i < numNodes; i++){
 			try{
 				nodes.get(i).tId.join();

@@ -41,7 +41,10 @@ public class Node implements Runnable{
 		
 		//initialize unspect queues
 		unspentTxns = new HashMap<>();
-		
+		for(int i =0; i < Main.numNodes; i++){
+			unspentTxns.put(Main.nodes.get(i).publicKey, new Vector<UnspentTxn>());
+		}
+
 		validTransactions = new Vector<>();
 	}
 	
@@ -59,6 +62,7 @@ public class Node implements Runnable{
 		else
 		System.out.println("Unspent size: "+nodeId+" is :"+myUnspent.size());
 		
+
 		while(true){
 		
 			//we start validating the received transactions 
@@ -192,9 +196,11 @@ public class Node implements Runnable{
 			System.out.println("Genesis block was mined by other node but inserted by node: "+nodeId);
 			Transaction txnInBlock = blk.transactionsInBlock.get(0);
 			UnspentTxn unspentOthersTxn = new UnspentTxn(getTxnBytes(txnInBlock), 0,  txnInBlock.outputTxns.get(0).receiver, txnInBlock.outputTxns.get(0).amount); 
-			Vector<UnspentTxn> unspentOthers = new Vector<>();
-			unspentOthers.add(unspentOthersTxn);
-			unspentTxns.put(txnInBlock.outputTxns.get(0).receiver, unspentOthers);
+			// Vector<UnspentTxn> unspentOthers = new Vector<>();
+			// unspentOthers.add(unspentOthersTxn);
+			// unspentTxns.put(txnInBlock.outputTxns.get(0).receiver, unspentOthers);
+			unspentTxns.get(this.publicKey).add(unspentOthers)
+
 			
 			
 		}
