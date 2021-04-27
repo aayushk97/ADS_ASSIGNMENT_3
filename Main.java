@@ -4,42 +4,52 @@ import java.math.BigInteger;
 import java.util.*;
 
 public class Main{
+	
 	public static final double MINING_REWARD = 50;  //Reward amount
-	public static int w = 15;  //first w bits to be zero
+	public static int w = 5;  //first w bits to be zero
 	public static int numNodes;
 	public static Vector<Node> nodes;
 
-    public static int arity = 2; //default
+    	public static int arity = 2; //default
+	
+	public static int maxTransactionInBlock = 100;
+	public static double probToSend = 0.2;
 	
 	static Vector<Queue<Block>> blockReceivingQueues;
 	static Vector<Queue<Transaction>> txnReceivingQueues;
-	// static int n;  //number of nodes
-	public static void main(String[] args){
-	   nodes = new Vector<Node>();
 	
-    	Scanner in = new Scanner(System.in);
-    	//create a new block chain class
-    	//create new nodes 
-    	System.out.println("Enter the number of nodes in network");
-    	numNodes = in.nextInt();
+	public static void main(String[] args){
+		nodes = new Vector<Node>();
+	
+    		Scanner in = new Scanner(System.in);
+    		
+    		System.out.println("Enter the number of nodes in network");
+    		numNodes = in.nextInt();
 
-    	//initialize the queues of each node 
-    	blockReceivingQueues = new Vector<>();
-    	txnReceivingQueues = new Vector<>();
+    		//initialize the queues of each node 
+    		blockReceivingQueues = new Vector<>();
+    		txnReceivingQueues = new Vector<>();
     	
-    	for(int i = 0; i < numNodes; i++){
-    		blockReceivingQueues.add(new LinkedList<>());
-    		txnReceivingQueues.add(new LinkedList<>());	
-        }
-        for(int i = 0 ; i < numNodes; i++ ){
-            //Vector<Block> x = new Vector<>();  // will need to remove this and input appropriatively 
-            nodes.add(new Node(i));
-            nodes.get(i).start();
-        }
-
-	//create a node
-	//create genesis block using node and add it to blockchain
-
+    		for(int i = 0; i < numNodes; i++){
+    			blockReceivingQueues.add(new LinkedList<>());
+    			txnReceivingQueues.add(new LinkedList<>());	
+        	}
+        	
+        	//initialize each node
+        	for(int i = 0 ; i < numNodes; i++ ){
+            		//Vector<Block> x = new Vector<>();  // will need to remove this and input appropriatively 
+            		nodes.add(new Node(i));
+            		nodes.get(i).start();
+        	}
+        	
+        	for(int i =0; i < numNodes; i++){
+			try{
+				nodes.get(i).tId.join();
+			}catch(InterruptedException e){
+				System.out.println("InterruptedException");
+			}
+				
+		}
 
 	}
 
