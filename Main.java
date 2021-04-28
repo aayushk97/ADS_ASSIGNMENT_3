@@ -42,6 +42,19 @@ public class Main{
             		nodes.add(new Node(i));
         	}
         	
+        	//initialize bitcoin chain in all nodes
+        	for(int i = 0; i < numNodes; i++){
+        		nodes.get(i).initializeBitcoinChain();
+        	}
+        	
+        	//mine the genesis block
+        	nodes.get(0).mineGenesisBlock();
+        	
+        	//add the genesis block to rest of them
+        	for(int i = 1 ; i < numNodes; i++ ){
+            		nodes.get(i).addGenesisBlock();
+        	}
+        	
             for(int i = 0 ; i < numNodes; i++ ){
                     nodes.get(i).start();
             }
