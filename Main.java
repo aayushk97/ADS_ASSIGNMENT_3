@@ -10,7 +10,9 @@ public class Main{
 	public static int numNodes;
 	public static Vector<Node> nodes;
 
-    public static int arity = 2; //default
+    	public static int arity = 2; //default
+    	public static double oneSatoshi = 0.005; //min amount of bitcoin that can be transferred
+    						//different from actual value
 	
 	public static int maxTransactionInBlock = 100;
 	public static double probToSend = 0.2;
