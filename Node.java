@@ -201,10 +201,7 @@ public class Node implements Runnable{
 			// Vector<UnspentTxn> unspentOthers = new Vector<>();
 			// unspentOthers.add(unspentOthersTxn);
 			// unspentTxns.put(txnInBlock.outputTxns.get(0).receiver, unspentOthers);
-			unspentTxns.get(this.publicKey).add(unspentOthersTxn);
-
-			
-			
+			unspentTxns.get(this.publicKey).add(unspentOthersTxn);			
 		}
 	}
 	
