@@ -30,15 +30,14 @@ class Merkle{
       transactionsHashList = new Vector<>();
 
       for (int i =0; i< transactionList.size(); i++){
-        System.out.println("Here??");
-        byte[] x = transactionList.get(i).getHash();
-        if(x != null){
-        System.out.println("1_Its not null?");
-        System.out.println(x);
-        System.out.println("1_printed");
-        }else{
-          System.out.println("1_NULL");
-        }
+        // byte[] x = transactionList.get(i).getHash();
+        // if(x != null){
+        // System.out.println("1_Its not null?");
+        // System.out.println(x);
+        // System.out.println("1_printed");
+        // }else{
+        //   System.out.println("1_NULL");
+        // }
         transactionsHashList.add(transactionList.get(i).getHash());
       }
     }
@@ -86,8 +85,8 @@ class Merkle{
       System.out.println("TransactionList Size: " + size);
       getHashofTransactions();
 
-      System.out.println("TransactionList Size2: " + transactionsHashList.size());
-      System.out.println("TransactionList Size2: " + transactionsHashList.get(size - 1));
+      // System.out.println("TransactionList Size2: " + transactionsHashList.size());
+      // System.out.println("TransactionList Size2: " + transactionsHashList.get(size - 1));
       
       Vector<byte[]> levelNodes = this.transactionsHashList;
       tree.add(levelNodes);
@@ -97,17 +96,17 @@ class Merkle{
         size = levelNodes.size();
       }
 
-      System.out.println("In Merkel: " + tree.size());
-      System.out.println("2: " + tree.get(0).size());
+      // System.out.println("In Merkel: " + tree.size());
+      // System.out.println("2: " + tree.get(0).size());
       byte[] x = tree.get(0).lastElement();
-      if(x != null){
-        System.out.println("Its not null?");
-        System.out.println(x);
-        System.out.println("printed");
-      }else{
-        System.out.println("NULL");
-      }
-      System.out.println("Last: " + x==null + "\n");
+      // if(x != null){
+      //   System.out.println("Its not null?");
+      //   System.out.println(x);
+      //   System.out.println("printed");
+      // }else{
+      //   System.out.println("NULL");
+      // }
+      // System.out.println("Last: " + x==null + "\n");
 
       this.rootHash = tree.get(tree.size()- 1).get(0);
       System.out.println("Hash root: " + this.rootHash);
