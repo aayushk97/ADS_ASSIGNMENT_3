@@ -86,7 +86,7 @@ public class Node implements Runnable{
 					size--;
 				}
 			}
-			/*
+			
 			//first we check if max no of transactions are collected by the node
 			if(validTransactions.size() >= Main.maxTransactionInBlock){
 				
@@ -128,7 +128,7 @@ public class Node implements Runnable{
 			
 		}
 			
-			}*/
+			}
 			
 			//perform a Transaction
 			Random random = new Random();
