@@ -45,40 +45,19 @@ public class Node implements Runnable{
 		unspentTxns = new HashMap<>();
 		
 		validTransactions = new Vector<>();
+		
 	}
 	
 	public void run(){
 
 		System.out.println("Value of m: "+m);
 
-		for(int i =0; i < Main.numNodes; i++){
-			unspentTxns.put(Main.nodes.get(i).publicKey, new Vector<UnspentTxn>());
-		}
+		
 
 		//Add a genesis block
 		//System.out.println("In running " + nodeId);
 
-		if(nodeId == 0) mineGenesisBlock();
-		else{
 		
-			blockReceiveQ = Main.blockReceivingQueues.get(nodeId);
-			
-			Block blk = blockReceiveQ.remove();
-			
-			boolean verifiedBlock = verifyBlock(blk);
-			while(!verifiedBlock){
-				blk = blockReceiveQ.remove();
-				verifiedBlock = verifyBlock(blk);
-			}
-			
-			bitcoinChain.add(blk);
-			System.out.println(nodeId + ": Genesis block was mined by other node but inserted by node: "+nodeId);
-			Transaction txnInBlock = blk.transactionsInBlock.get(0);
-			UnspentTxn unspentOthersTxn = new UnspentTxn(txnInBlock.txHash, 0,  txnInBlock.outputTxns.get(0).receiver, txnInBlock.outputTxns.get(0).amount); 
-		    	unspentTxns.get(txnInBlock.outputTxns.get(0).receiver).add(unspentOthersTxn);
-			System.out.println("The coinbase transaction was added by "+(1-nodeId)+" and had an hash : "+txnInBlock.txHash+"amount: "+txnInBlock.outputTxns.get(0).amount);
-	
-		}
 
 		System.out.println("BlockChain size for node: "+nodeId+" is :"+bitcoinChain.size());
 		blockReceiveQ = Main.blockReceivingQueues.get(nodeId);
@@ -185,7 +164,13 @@ public class Node implements Runnable{
 			tId.start();
 		}
 	}
-
+	
+	public void initializeBitcoinChain(){
+		for(int i =0; i < Main.numNodes; i++){
+			unspentTxns.put(Main.nodes.get(i).publicKey, new Vector<UnspentTxn>());
+		}
+	}
+	
 	public void mineGenesisBlock(){
 		Transaction txn = createCoinbaseTxn();	//Only a coinbase txn will be added in the genesis block
 		signTransaction(txn);
@@ -216,6 +201,31 @@ public class Node implements Runnable{
 		unspentTxns.put(publicKey, myUnspent);
 		System.out.println("The coinbase transaction was added by "+(nodeId)+" and had an hash : "+txn.txHash+"amount: "+txn.outputTxns.get(0).amount);
 		
+	}
+	
+	public void addGenesisBlock(){
+		
+		if(nodeId != 0){
+		
+			blockReceiveQ = Main.blockReceivingQueues.get(nodeId);
+			
+			Block blk = blockReceiveQ.remove();
+			
+			boolean verifiedBlock = verifyBlock(blk);
+			while(!verifiedBlock){
+				blk = blockReceiveQ.remove();
+				verifiedBlock = verifyBlock(blk);
+			}
+			
+			bitcoinChain.add(blk);
+			System.out.println(nodeId + ": Genesis block was mined by other node but inserted by node: "+nodeId);
+			Transaction txnInBlock = blk.transactionsInBlock.get(0);
+			UnspentTxn unspentOthersTxn = new UnspentTxn(txnInBlock.txHash, 0,  txnInBlock.outputTxns.get(0).receiver, txnInBlock.outputTxns.get(0).amount); 
+		    	unspentTxns.get(txnInBlock.outputTxns.get(0).receiver).add(unspentOthersTxn);
+			System.out.println("The coinbase transaction was added by "+(1-nodeId)+" and had an hash : "+txnInBlock.txHash+"amount: "+txnInBlock.outputTxns.get(0).amount);
+	
+		}
+	
 	}
 	
 	public boolean verifyTransaction(Transaction receivedTransaction){
