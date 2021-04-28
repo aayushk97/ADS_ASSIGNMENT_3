@@ -6,7 +6,7 @@ import java.util.*;
 public class Main{
 	
 	public static final double MINING_REWARD = 50;  //Reward amount
-	public static int w = 10;  //first w bits to be zero
+	public static int w = 15;  //first w bits to be zero
 	public static int numNodes;
 	public static Vector<Node> nodes;
 
@@ -14,7 +14,7 @@ public class Main{
 	public static double oneSatoshi = 0.005; //min amount of bitcoin that can be transferred
 						                      //different from actual value
 	
-	public static int maxTransactionInBlock = 100;
+	public static int maxTransactionInBlock = 50;   
 	public static double probToSend = 0.2;
 	
 	static Vector<Queue<Block>> blockReceivingQueues;

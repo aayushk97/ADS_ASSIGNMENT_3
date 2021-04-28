@@ -4,6 +4,8 @@ import java.security.*;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.io.IOException;
+import java.sql.Timestamp;
+
 
 public class Node implements Runnable{
 	
@@ -42,18 +44,22 @@ public class Node implements Runnable{
 		//initialize unspect queues
 		unspentTxns = new HashMap<>();
 		
-
 		validTransactions = new Vector<>();
 	}
 	
 	public void run(){
+
 		System.out.println("Value of m: "+m);
+
 		for(int i =0; i < Main.numNodes; i++){
 			unspentTxns.put(Main.nodes.get(i).publicKey, new Vector<UnspentTxn>());
 		}
+
 		//Add a genesis block
-		System.out.println("In running " + nodeId);
+		//System.out.println("In running " + nodeId);
+
 		mineGenesisBlock();
+
 		System.out.println("BlockChain size for node: "+nodeId+" is :"+bitcoinChain.size());
 		blockReceiveQ = Main.blockReceivingQueues.get(nodeId);
 		txnReceiveQ = Main.txnReceivingQueues.get(nodeId);
@@ -81,7 +87,6 @@ public class Node implements Runnable{
 					if(verified){
 						validTransactions.add(receivedTxn);
 						m++;		
-				
 					}
 					size--;
 				}
@@ -90,13 +95,13 @@ public class Node implements Runnable{
 			//first we check if max no of transactions are collected by the node
 			if(validTransactions.size() >= Main.maxTransactionInBlock){
 				
-				System.out.println("Transcations are collected and block is being made");
-				
+				System.out.println(nodeId + ": Transactions are collected and block is being made");
+		
 				Vector<Transaction> vec = new Vector<>();
 				
 				//Add limited no of transactions to new block
 				for(int i = 0; i < Main.maxTransactionInBlock; i++){
-					Transaction txn = txnReceiveQ.remove();
+					Transaction txn = validTransactions.get(i);
 					vec.add(txn);
 				}
 				
@@ -123,10 +128,8 @@ public class Node implements Runnable{
 					bitcoinChain.add(blk);
 					System.out.println("current length block was mined by other node but inserted by node: "+nodeId);
 					
-					//we now validate the transactions in this block and add the validated ones to unspentTxns
-					
-			
-		}
+					//we now validate the transactions in this block and add the validated ones to unspentTxns	
+				}
 			
 			}
 			
@@ -162,7 +165,7 @@ public class Node implements Runnable{
 		
 		
 		//Time to broadCast and add to it's own ledger
-		System.out.println("Signature: "+ verifyTxnSignature(txn));
+		//System.out.println("Signature: "+ verifyTxnSignature(txn));
 		
 		//Add the transactions to block
 		Block blk = new Block(vec);
@@ -172,11 +175,11 @@ public class Node implements Runnable{
 			broadCast(blk);
 
 			bitcoinChain.add(blk);
-			System.out.println("Genesis block mined by node "+nodeId);
+			System.out.println("Genesis block mined by " + nodeId + " at " + getCurrentTime());
 			
 			//add this transaction to unspent trnasaction
 			UnspentTxn myUnspentTxn = new UnspentTxn(getTxnBytes(txn), 0, publicKey, txn.outputTxns.get(0).amount);
-			System.out.println("Amount in genesis mine block: "+txn.outputTxns.get(0).amount);
+			//System.out.println("Amount in genesis mine block: "+txn.outputTxns.get(0).amount);
 			Vector<UnspentTxn> myUnspent = new Vector<>();
 			myUnspent.add(myUnspentTxn);
 			unspentTxns.put(publicKey, myUnspent);
@@ -371,7 +374,6 @@ public class Node implements Runnable{
 
   	public boolean mineBlock(Block blk){ //while mining it needs to keep checking whether next block has arrived
 
-  		//Block blk = prepareBlock();
   		byte[] s = blk.getBlockInFormOfbytes(); //Should return bytes of prevHash+Txns(merkel root)
   		BigInteger nonce = new BigInteger("0");
   		//System.out.println("Size of the block" + Main.blockReceivingQueues.get(nodeId).size());
@@ -380,6 +382,7 @@ public class Node implements Runnable{
   			if(Main.blockReceivingQueues.get(nodeId).size() != 0) return false;
   			
   			byte[] toBeHashed = concatTwoByteArray(nonce.toByteArray(), s);
+
   			try{
 
   				byte[] hash = Crypto.sha256(toBeHashed);
@@ -396,7 +399,7 @@ public class Node implements Runnable{
 	        //System.out.println("Still mining current nonce: " + nonce);
 	   
   		}
-  		System.out.println("mining done by "+ nodeId + " !");
+  		System.out.println("mining done by "+ nodeId + "!");
   		
   		return true;
   	}
@@ -528,6 +531,10 @@ public class Node implements Runnable{
   	
   	}
 
+  	public String getCurrentTime(){
+  		Timestamp tms = new Timestamp(System.currentTimeMillis());
+		return tms.toString();
+  	}
 }
 
 class UnspentTxn{
