@@ -66,21 +66,25 @@ public class Node implements Runnable{
 		
 		System.out.println("Value of m: "+m);
 		
-		while(true){
+		while(true && Main.numNodes > 1){
 			//getBalanceOfEachNode();
 			//System.out.println("Size of receive queue: "+txnReceiveQ.size());
 			//we start validating the received transactions 
 			if(txnReceiveQ.size() > 0){
 				System.out.println("Verifying transactions");
-				Transaction receivedTxn = txnReceiveQ.remove();
-				boolean verified = verifyTransaction(receivedTxn);
 				
-				if(verified){
-					validTransactions.add(receivedTxn);
-					m++;		
+				int size = txnReceiveQ.size();
+				while(size > 0){
+					Transaction receivedTxn = txnReceiveQ.remove();
+					boolean verified = verifyTransaction(receivedTxn);
 				
+					if(verified){
+						validTransactions.add(receivedTxn);
+						m++;		
+				
+					}
+					size--;
 				}
-			
 			}
 			/*
 			//first we check if max no of transactions are collected by the node
@@ -212,7 +216,6 @@ public class Node implements Runnable{
 	public boolean verifyTransaction(Transaction receivedTransaction){
 		
 		 //find the hash of this transaction
-		 //Edit: Add time too?
 		boolean verified = verifyTxnSignature(receivedTransaction);	
 		if(!verified) return false;
 		
@@ -243,7 +246,7 @@ public class Node implements Runnable{
 			
 			for(int j = 0; j < receivedTransaction.inputTxns.size(); j++){
 				for(int i = 0; i < unspentTxnNode.size(); i++){
-				System.out.println("Hash of unspent: "+unspentTxnNode.get(i).txnHash+" Hash of input"+receivedTransaction.inputTxns.get(j).refTxn);
+				//System.out.println("Hash of unspent: "+unspentTxnNode.get(i).txnHash+" Hash of input"+receivedTransaction.inputTxns.get(j).refTxn);
 					if(unspentTxnNode.get(i).txnHash == receivedTransaction.inputTxns.get(j).refTxn){
 						
 		System.out.println("Amount Removed");
@@ -263,7 +266,7 @@ public class Node implements Runnable{
 				unspentTxnNode2.add(unspent);
 				
 				unspentTxns.put(receivedTransaction.outputTxns.get(i).receiver, unspentTxnNode2);	
-				System.out.println("Added unspent");	
+				//System.out.println("Added unspent");	
 			}
 			
 			return true;
@@ -300,14 +303,15 @@ public class Node implements Runnable{
 		System.out.println("Amount: "+totalAmount+" in node :"+nodeId);
 		
 		if(totalAmount > 0){
-			int numTransaction =  rn.nextInt((int)(Main.numNodes*0.7));  //will return a random int these number of output will be included
+			int numTransaction =  1+rn.nextInt((int)(Main.numNodes*0.7)-1);
+			  //will return a random int these number of output will be included
 			Set<Integer> alreadySent = new HashSet<>();
-			if (numTransaction == 0){
+			/*if (numTransaction == 0){
 				numTransaction = Main.numNodes/2;
 				if(numTransaction == 0){
 					System.out.println("Only one node network");
 				}
-			}
+			}*/
 			while(numTransaction > 0){
 				double fractionPay = rn.nextDouble();  //will return uniformely distributed [0,1]
 				int randomNodeId = rn.nextInt(Main.numNodes);  //will return a random nodeId
