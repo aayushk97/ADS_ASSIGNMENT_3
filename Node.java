@@ -557,7 +557,7 @@ public class Node implements Runnable{
   	
   	public void sendResponseMessage(int receiver){  
 
-  		Message msg = new ResponseMessage(0, receiver, this.nodeId, this.bitcoinChain.size());
+  		Message msg = new ResponseMessage(1, receiver, this.nodeId, this.bitcoinChain.size());
 
   		synchronized(Main.messagePassingQ.get(receiver)){
   			Message msg  =  messagePassingQ.get(receiver).add(msg);
