@@ -1,30 +1,96 @@
 import java.util.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
+import java.lang.Math;
 
 class Merkle{
     //private String rootHash;
     public byte[] rootHash;
     private int arity;
-    private Vector<Transaction> transactionList;
+    //private Vector<Transaction> transactionList;
     private Vector<byte[]> transactionsHashList;
     private Vector<Vector<byte[]>> tree;
 
 
     public Merkle(Vector<Transaction> vec){
-        System.out.println("Merkel Constructor");
-        this.transactionList = vec;
+        System.out.println("Merkel Constructor: "+vec.size());
+        //this.transactionList = vec;
         this.arity = Main.arity;
         this.tree = new Vector<>();
-        buidMerkelTree();
+        transactionsHashList = new Vector<>();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        
+        for(int i = 0; i < vec.size(); i+=Main.arity){
+        	try{
+        	for(int j = i; j < Main.arity && j < vec.size() ; j++) outputStream.write(vec.get(j).getHash());
+        	
+        	transactionsHashList.add(Crypto.sha256(outputStream.toByteArray()));
+        	
+        	outputStream.reset();
+        	}catch(IOException e){
+              System.out.println("Exception merkle");
+            }
+            
+        }
+        
+        for(int i = 0; i < transactionsHashList.size(); i++){
+        	System.out.println(transactionsHashList.get(i));
+        }
+        
+        transactionsHashList.add(null);
+        
+        System.out.println(transactionsHashList.size());
+        byte[] tempHash;
+        double size = transactionsHashList.size();
+        
+        Vector<byte[]> temp = new Vector<>();
+        
+        while(transactionsHashList.size() > 2){
+        	
+        	
+        	try{
+        	for(int i = 0; i < Main.arity && transactionsHashList.get(0) != null; i++){ outputStream.write(transactionsHashList.remove(0));
+        	//System.out.println(" Removed element at"+i);
+		
+        	}
+		
+		//System.out.println(transactionsHashList.size() + " 1 "+ temp.size()+"node : "+nodeId);
+		//size -= Main.arity;
+        	        	
+        	tempHash = outputStream.toByteArray();
+        	transactionsHashList.add(Crypto.sha256(tempHash));
+        	outputStream.reset();
+        	
+        	if(transactionsHashList.get(0) == null){ 
+        		transactionsHashList.remove(0);
+        		transactionsHashList.add(null);
+        	}
+        	
+        	//System.out.println(size + " 2 "+ temp.size());
+        	 /*if(size <= 0){
+        	 	int sizetmp = temp.size();
+        	 	for(int i = 0; i < sizetmp; i++){
+        	 		transactionsHashList.add(temp.remove(0));
+        	 	}
+        	 	size = Math.ceil(transactionsHashList.size()/Main.arity); 
+			System.out.println(" here");        	 	
+        	 } 
+        	
+        	System.out.println(size + " "+ temp.size() + " "+ transactionsHashList.size());
+		if(temp.size() <= 0 && transactionsHashList.size() == 1) break;*/        	
+        	}catch(IOException e){
+              System.out.println("Exception merkle");
+            }
+        }
+        
+        rootHash = transactionsHashList.remove(0);
     }
 
 
     public byte[] getMerkleRootHash(){
       return rootHash;
     }
-
+/*
     public void getHashofTransactions(){
 
       transactionsHashList = new Vector<>();
@@ -81,6 +147,8 @@ class Merkle{
 
     }
     private void buidMerkelTree(){
+      
+      
       int size = transactionList.size();
       System.out.println("TransactionList Size: " + size);
       getHashofTransactions();
@@ -111,6 +179,7 @@ class Merkle{
       this.rootHash = tree.get(tree.size()- 1).get(0);
       System.out.println("Hash root: " + this.rootHash);
     }
+*/
 }
 
 
