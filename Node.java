@@ -555,6 +555,37 @@ public class Node implements Runnable{
   		}
   	}
   	
+  	public void sendResponseMessage(int receiver){  
+
+  		Message msg = new ResponseMessage(0, receiver, this.nodeId, this.bitcoinChain.size());
+
+  		synchronized(Main.messagePassingQ.get(receiver)){
+  			Message msg  =  messagePassingQ.get(receiver).add(msg);
+  			Main.messagePassingQ.get(receiver).notify();
+  		}
+  	}
+
+
+  	public void sendRequestMessage(int receiver){  
+
+  		Message msg = new RequestMessage(0, receiver, this.nodeId, this.bitcoinChain.size(), this.bitcoinChain);
+
+  		synchronized(Main.messagePassingQ.get(receiver)){
+  			Message msg  =  messagePassingQ.get(receiver).add(msg);
+  			Main.messagePassingQ.get(receiver).notify();
+  		}
+  	}
+
+  	public Message getMessage(){
+  		Message msg =null;
+  		synchronized(Main.messagePassingQ.get(nodeId)){
+  			if(!Main.messagePassingQ.get(nodeId).isEmpty())
+  				msg  =  messagePassingQ.get(nodeId).remove();
+  			messagePassingQ.get(nodeId).notify();
+  		}
+  		return msg;
+  	}
+
   	public void getBalanceOfEachNode(){
   		for(int i = 0; i < Main.numNodes; i++){
   			Vector<UnspentTxn> unspentOfNode = unspentTxns.get(Main.nodes.get(i).getPublickey());
@@ -568,6 +599,8 @@ public class Node implements Runnable{
   		}
   	
   	}
+
+
 
   	public String getCurrentTime(){
   		Timestamp tms = new Timestamp(System.currentTimeMillis());
@@ -588,16 +621,3 @@ class UnspentTxn{
 	}
 }
 
-// class TransactionPool(){  //can votes from all nodes whether they are confirming this txn or not and Majority wins
-// 							//when a node verify  the transaction in increase the confirmations by 1 
-// 							//when at least 51% nodes confirms it should move to confirmed pool or can be taken as confirmed
-// 							// by  checking
-// 	Transaction txn;
-// 	int confirmation;
-// 	int rejections;
-// 	boolean isValid;  //true after 51% confirmations
-// 	public void confirm(){
-// 		confirmation++;
-// 		if()
-// 	}
-// }

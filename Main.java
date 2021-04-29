@@ -19,7 +19,8 @@ public class Main{
 	
 	static Vector<Queue<Block>> blockReceivingQueues;
 	static Vector<Queue<Transaction>> txnReceivingQueues;
-	
+	static Vector<Queue<Message>> messagePassingQ;  
+
 	public static void main(String[] args){
 		nodes = new Vector<Node>();
 	
@@ -31,10 +32,11 @@ public class Main{
     		//initialize the queues of each node 
     		blockReceivingQueues = new Vector<>();
     		txnReceivingQueues = new Vector<>();
-    	
+    	    messagePassingQ = new Vector<>();
     		for(int i = 0; i < numNodes; i++){
     			blockReceivingQueues.add(new LinkedList<>());
     			txnReceivingQueues.add(new LinkedList<>());	
+                messagePassingQ.add(new LinkedList<>());
         	}
         	
         	//initialize each node
